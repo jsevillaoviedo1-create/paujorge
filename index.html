@@ -523,13 +523,121 @@ const SUBJECTS = {
     ]
   },
   mat: { name: 'Matemáticas CCSS', color: 'var(--mat)', emoji: '📐',
+    trimestres: [
+      { label: '1.er Trimestre — Álgebra Lineal y Programación Lineal', topics: [
+        'Matrices: concepto y tipos de matrices',
+        'Matrices: suma y resta de matrices',
+        'Matrices: multiplicación de matrices',
+        'Matrices: transpuesta e inversa',
+        'Determinantes: cálculo (regla de Sarrus, cofactores)',
+        'Determinantes: propiedades y rango de una matriz',
+        'Sistemas de ecuaciones: clasificación (Rouché-Fröbenius)',
+        'Sistemas de ecuaciones: método de Gauss',
+        'Sistemas de ecuaciones: regla de Cramer',
+        'Sistemas de ecuaciones: sistemas homogéneos',
+        'Programación lineal: inecuaciones lineales',
+        'Programación lineal: región factible y vértices',
+        'Programación lineal: función objetivo y optimización',
+        'Programación lineal: problemas de aplicación'
+      ]},
+      { label: '2.º Trimestre — Análisis', topics: [
+        'Funciones: dominio, recorrido y tipos',
+        'Funciones: operaciones y composición',
+        'Límites: concepto e interpretación gráfica',
+        'Límites: cálculo algebraico y sustitución',
+        'Límites: indeterminaciones (0/0, ∞/∞, ∞−∞)',
+        'Límites: límites en el infinito y asíntotas',
+        'Continuidad: definición y tipos de discontinuidad',
+        'Derivadas: definición y tasa de variación',
+        'Derivadas: reglas de derivación (producto, cociente, cadena)',
+        'Derivadas: derivada de funciones compuestas',
+        'Derivadas: recta tangente y normal a una curva',
+        'Aplicaciones: crecimiento y decrecimiento',
+        'Aplicaciones: máximos y mínimos relativos y absolutos',
+        'Aplicaciones: concavidad, convexidad y puntos de inflexión',
+        'Aplicaciones: representación gráfica completa',
+        'Aplicaciones: problemas de optimización',
+        'Integrales: primitivas y reglas de integración inmediata',
+        'Integrales: integración por partes',
+        'Integrales: integración por sustitución / cambio de variable',
+        'Integrales: integral definida y teorema fundamental del cálculo',
+        'Integrales: área bajo una curva',
+        'Integrales: área entre dos curvas'
+      ]},
+      { label: '3.er Trimestre — Probabilidad y Estadística', topics: [
+        'Estadística descriptiva: tipos de variables y tablas de frecuencias',
+        'Estadística descriptiva: media, mediana y moda',
+        'Estadística descriptiva: varianza y desviación típica',
+        'Estadística descriptiva: diagramas y gráficos estadísticos',
+        'Probabilidad: espacio muestral y sucesos',
+        'Probabilidad: axiomas y propiedades',
+        'Probabilidad: probabilidad condicionada',
+        'Probabilidad: regla del producto y teorema de la probabilidad total',
+        'Probabilidad: teorema de Bayes',
+        'Distribuciones discretas: distribución binomial B(n,p)',
+        'Distribuciones discretas: media y varianza de la binomial',
+        'Distribuciones continuas: distribución Normal N(μ,σ)',
+        'Distribuciones continuas: tipificación y uso de tablas Z',
+        'Distribuciones continuas: aproximación binomial a la Normal',
+        'Inferencia estadística: intervalos de confianza para la media',
+        'Inferencia estadística: intervalos de confianza para proporciones',
+        'Inferencia estadística: tamaño muestral'
+      ]}
+    ],
     topics: [
-      'Álgebra: matrices y determinantes', 'Sistemas de ecuaciones lineales (Cramer, Gauss)',
-      'Análisis: límites y continuidad', 'Derivadas: reglas y aplicaciones',
-      'Crecimiento, decrecimiento y extremos', 'Integrales: cálculo de primitivas',
-      'Integrales: área entre curvas', 'Estadística descriptiva: medidas',
-      'Distribuciones de probabilidad (Binomial, Normal)', 'Inferencia estadística básica',
-      'Programación lineal', 'Funciones: dominio, imagen y gráficas'
+      'Matrices: concepto y tipos de matrices',
+      'Matrices: suma y resta de matrices',
+      'Matrices: multiplicación de matrices',
+      'Matrices: transpuesta e inversa',
+      'Determinantes: cálculo (regla de Sarrus, cofactores)',
+      'Determinantes: propiedades y rango de una matriz',
+      'Sistemas de ecuaciones: clasificación (Rouché-Fröbenius)',
+      'Sistemas de ecuaciones: método de Gauss',
+      'Sistemas de ecuaciones: regla de Cramer',
+      'Sistemas de ecuaciones: sistemas homogéneos',
+      'Programación lineal: inecuaciones lineales',
+      'Programación lineal: región factible y vértices',
+      'Programación lineal: función objetivo y optimización',
+      'Programación lineal: problemas de aplicación',
+      'Funciones: dominio, recorrido y tipos',
+      'Funciones: operaciones y composición',
+      'Límites: concepto e interpretación gráfica',
+      'Límites: cálculo algebraico y sustitución',
+      'Límites: indeterminaciones (0/0, ∞/∞, ∞−∞)',
+      'Límites: límites en el infinito y asíntotas',
+      'Continuidad: definición y tipos de discontinuidad',
+      'Derivadas: definición y tasa de variación',
+      'Derivadas: reglas de derivación (producto, cociente, cadena)',
+      'Derivadas: derivada de funciones compuestas',
+      'Derivadas: recta tangente y normal a una curva',
+      'Aplicaciones: crecimiento y decrecimiento',
+      'Aplicaciones: máximos y mínimos relativos y absolutos',
+      'Aplicaciones: concavidad, convexidad y puntos de inflexión',
+      'Aplicaciones: representación gráfica completa',
+      'Aplicaciones: problemas de optimización',
+      'Integrales: primitivas y reglas de integración inmediata',
+      'Integrales: integración por partes',
+      'Integrales: integración por sustitución / cambio de variable',
+      'Integrales: integral definida y teorema fundamental del cálculo',
+      'Integrales: área bajo una curva',
+      'Integrales: área entre dos curvas',
+      'Estadística descriptiva: tipos de variables y tablas de frecuencias',
+      'Estadística descriptiva: media, mediana y moda',
+      'Estadística descriptiva: varianza y desviación típica',
+      'Estadística descriptiva: diagramas y gráficos estadísticos',
+      'Probabilidad: espacio muestral y sucesos',
+      'Probabilidad: axiomas y propiedades',
+      'Probabilidad: probabilidad condicionada',
+      'Probabilidad: regla del producto y teorema de la probabilidad total',
+      'Probabilidad: teorema de Bayes',
+      'Distribuciones discretas: distribución binomial B(n,p)',
+      'Distribuciones discretas: media y varianza de la binomial',
+      'Distribuciones continuas: distribución Normal N(μ,σ)',
+      'Distribuciones continuas: tipificación y uso de tablas Z',
+      'Distribuciones continuas: aproximación binomial a la Normal',
+      'Inferencia estadística: intervalos de confianza para la media',
+      'Inferencia estadística: intervalos de confianza para proporciones',
+      'Inferencia estadística: tamaño muestral'
     ]
   },
   his: { name: 'Historia de España', color: 'var(--his)', emoji: '🏛️',
@@ -579,15 +687,15 @@ const SUBJECTS = {
         'Tema 4: La organización interna de la empresa',
         'Tema 5: Gestión de Recursos Humanos'
       ]},
-      { label: '2.º Trimestre — Área Comercial y Producción', topics: [
+      { label: '2.º Trimestre — Área Comercial, Producción y Contabilidad', topics: [
         'Tema 6: El marketing y la investigación de mercados',
         'Tema 7: El plan de marketing — Las 4P',
-        'Tema 8: La función productiva — Producción y stocks'
-      ]},
-      { label: '3.er Trimestre — Contabilidad y Finanzas', topics: [
+        'Tema 8: La función productiva — Producción y stocks',
         'Tema 9: Introducción a la Contabilidad y Cuentas Anuales',
         'Tema 10: Análisis económico-financiero',
-        'Tema 11: Análisis económico-financiero avanzado',
+        'Tema 11: Análisis económico-financiero avanzado'
+      ]},
+      { label: '3.er Trimestre — Finanzas y Modelos de Negocio', topics: [
         'Tema 12: La financiación de la empresa',
         'Tema 13: Las inversiones — VAN y TIR',
         'Tema 14: Modelos de negocio e innovación — Canvas',
@@ -827,32 +935,6 @@ function renderTemario() {
   Object.entries(SUBJECTS).forEach(([key, s]) => {
     const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
     const pct = Math.round(done / s.topics.length * 100);
-
-    // Build topic list — grouped by trimestre if available
-    let topicsHtml = '';
-    if (s.trimestres) {
-      let globalIdx = 0;
-      s.trimestres.forEach(tr => {
-        topicsHtml += `<li style="padding:6px 0 2px;font-size:0.72rem;font-weight:800;color:${s.color};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-top:4px">${tr.label}</li>`;
-        tr.topics.forEach(t => {
-          const i = globalIdx++;
-          const done_t = topicsDone[key + '_' + i] || false;
-          topicsHtml += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-            <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-            <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
-          </li>`;
-        });
-      });
-    } else {
-      s.topics.forEach((t, i) => {
-        const done_t = topicsDone[key + '_' + i] || false;
-        topicsHtml += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-          <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-          <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
-        </li>`;
-      });
-    }
-
     html += `<div class="subject-card">
       <div class="subject-card-header">
         <div class="subject-icon" style="background:${s.color}22">${s.emoji}</div>
@@ -863,12 +945,18 @@ function renderTemario() {
         </div>
       </div>
       <div class="subject-card-body">
-        <ul class="topic-list">${topicsHtml}</ul>
-      </div></div>`;
+        <ul class="topic-list">`;
+    s.topics.forEach((t, i) => {
+      const done_t = topicsDone[key + '_' + i] || false;
+      html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+        <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+        <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
+      </li>`;
+    });
+    html += `</ul></div></div>`;
   });
   document.getElementById('subjects-grid').innerHTML = html;
 }
-
 
 function toggleTopic(key, i, cb) {
   topicsDone[key + '_' + i] = cb.checked;
