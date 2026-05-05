@@ -573,6 +573,22 @@ const SUBJECTS = {
 
 let events = JSON.parse(localStorage.getItem('pau_events') || '[]');
 let topicsDone = JSON.parse(localStorage.getItem('pau_topics') || '{}');
+
+// ── Temas con documentos ya disponibles ─────────────────────────
+// Historia de España: temas 0-10 (11 de 12, falta "Arte y cultura")
+const HIS_DONE = [0,1,2,3,4,5,6,7,8,9,10];
+// Empresa y Modelos de Negocio: todos (12 de 12)
+const EMP_DONE = [0,1,2,3,4,5,6,7,8,9,10,11];
+
+let prefilledKey = 'pau_prefilled_v1';
+if (!localStorage.getItem(prefilledKey)) {
+  HIS_DONE.forEach(i => { if (topicsDone['his_' + i] === undefined) topicsDone['his_' + i] = true; });
+  EMP_DONE.forEach(i => { if (topicsDone['emp_' + i] === undefined) topicsDone['emp_' + i] = true; });
+  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
+  localStorage.setItem(prefilledKey, '1');
+}
+// ────────────────────────────────────────────────────────────────
+
 let currentMonth = new Date();
 let currentView = 'month';
 let editingId = null;
