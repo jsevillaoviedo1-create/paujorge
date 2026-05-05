@@ -533,23 +533,83 @@ const SUBJECTS = {
     ]
   },
   his: { name: 'Historia de España', color: 'var(--his)', emoji: '🏛️',
+    trimestres: [
+      { label: '1.er Trimestre', topics: [
+        'Unidad 1: Las raíces históricas de España',
+        'Unidad 2: La Edad Media cristiana',
+        'Unidad 3: La Monarquía Hispánica (ss. XVI-XVII)',
+        'Unidad 4: El siglo XVIII — Reformismo borbónico'
+      ]},
+      { label: '2.º Trimestre', topics: [
+        'Unidad 5: Crisis del Antiguo Régimen y liberalismo',
+        'Unidad 6: La construcción del Estado Liberal — Isabel II',
+        'Unidad 7: La Restauración Borbónica (1875-1902)',
+        'Unidad 8: Transformaciones económicas y sociales del s. XIX',
+        'Unidad 9: El reinado de Alfonso XIII (1902-1931)'
+      ]},
+      { label: '3.er Trimestre', topics: [
+        'Unidad 10: La Segunda República y la Guerra Civil',
+        'Unidad 11: La Dictadura Franquista (1939-1975)',
+        'Unidad 12: La Transición y la Democracia',
+        'Unidad extra: Las Constituciones españolas (repaso PAU)'
+      ]}
+    ],
     topics: [
-      'La Restauración borbónica (1874-1902)', 'Crisis del 98 y regeneracionismo',
-      'El reinado de Alfonso XIII (1902-1931)', 'La Segunda República Española',
-      'La Guerra Civil Española (1936-1939)', 'La dictadura franquista: etapas',
-      'Economía y sociedad en el franquismo', 'La Transición democrática',
-      'La Constitución de 1978', 'Los gobiernos democráticos (1979-2000)',
-      'España en la Unión Europea', 'Arte y cultura contemporánea española'
+      'Unidad 1: Las raíces históricas de España',
+      'Unidad 2: La Edad Media cristiana',
+      'Unidad 3: La Monarquía Hispánica (ss. XVI-XVII)',
+      'Unidad 4: El siglo XVIII — Reformismo borbónico',
+      'Unidad 5: Crisis del Antiguo Régimen y liberalismo',
+      'Unidad 6: La construcción del Estado Liberal — Isabel II',
+      'Unidad 7: La Restauración Borbónica (1875-1902)',
+      'Unidad 8: Transformaciones económicas y sociales del s. XIX',
+      'Unidad 9: El reinado de Alfonso XIII (1902-1931)',
+      'Unidad 10: La Segunda República y la Guerra Civil',
+      'Unidad 11: La Dictadura Franquista (1939-1975)',
+      'Unidad 12: La Transición y la Democracia',
+      'Unidad extra: Las Constituciones españolas (repaso PAU)'
     ]
   },
   emp: { name: 'Empresa y Modelos de Negocio', color: 'var(--emp)', emoji: '💼',
+    trimestres: [
+      { label: '1.er Trimestre — La Empresa', topics: [
+        'Tema 1: La empresa y el empresario',
+        'Tema 2: La empresa en su entorno (PESTEL, DAFO)',
+        'Tema 3: Localización y dimensión de la empresa',
+        'Tema 4: La organización interna de la empresa',
+        'Tema 5: Gestión de Recursos Humanos'
+      ]},
+      { label: '2.º Trimestre — Área Comercial y Producción', topics: [
+        'Tema 6: El marketing y la investigación de mercados',
+        'Tema 7: El plan de marketing — Las 4P',
+        'Tema 8: La función productiva — Producción y stocks'
+      ]},
+      { label: '3.er Trimestre — Contabilidad y Finanzas', topics: [
+        'Tema 9: Introducción a la Contabilidad y Cuentas Anuales',
+        'Tema 10: Análisis económico-financiero',
+        'Tema 11: Análisis económico-financiero avanzado',
+        'Tema 12: La financiación de la empresa',
+        'Tema 13: Las inversiones — VAN y TIR',
+        'Tema 14: Modelos de negocio e innovación — Canvas',
+        'Tema 15: Proyecto empresarial — Plan de empresa'
+      ]}
+    ],
     topics: [
-      'La empresa: concepto, tipos y funciones', 'Análisis del entorno: DAFO y PESTEL',
-      'Plan de empresa y modelo Canvas', 'Organización interna: organigramas',
-      'Recursos humanos y gestión del talento', 'Marketing: producto, precio, plaza, promoción',
-      'Contabilidad básica: balance y cuenta de resultados', 'Fuentes de financiación',
-      'Inversión y análisis de proyectos (VAN, TIR)', 'Fiscalidad empresarial básica',
-      'Innovación y emprendimiento social', 'Start-ups y modelos de negocio digitales'
+      'Tema 1: La empresa y el empresario',
+      'Tema 2: La empresa en su entorno (PESTEL, DAFO)',
+      'Tema 3: Localización y dimensión de la empresa',
+      'Tema 4: La organización interna de la empresa',
+      'Tema 5: Gestión de Recursos Humanos',
+      'Tema 6: El marketing y la investigación de mercados',
+      'Tema 7: El plan de marketing — Las 4P',
+      'Tema 8: La función productiva — Producción y stocks',
+      'Tema 9: Introducción a la Contabilidad y Cuentas Anuales',
+      'Tema 10: Análisis económico-financiero',
+      'Tema 11: Análisis económico-financiero avanzado',
+      'Tema 12: La financiación de la empresa',
+      'Tema 13: Las inversiones — VAN y TIR',
+      'Tema 14: Modelos de negocio e innovación — Canvas',
+      'Tema 15: Proyecto empresarial — Plan de empresa'
     ]
   },
   len: { name: 'Lengua y Literatura', color: 'var(--len)', emoji: '📝',
@@ -571,24 +631,9 @@ const SUBJECTS = {
   }
 };
 
+
 let events = JSON.parse(localStorage.getItem('pau_events') || '[]');
 let topicsDone = JSON.parse(localStorage.getItem('pau_topics') || '{}');
-
-// ── Temas con documentos ya disponibles ─────────────────────────
-// Historia de España: temas 0-10 (11 de 12, falta "Arte y cultura")
-const HIS_DONE = [0,1,2,3,4,5,6,7,8,9,10];
-// Empresa y Modelos de Negocio: todos (12 de 12)
-const EMP_DONE = [0,1,2,3,4,5,6,7,8,9,10,11];
-
-let prefilledKey = 'pau_prefilled_v1';
-if (!localStorage.getItem(prefilledKey)) {
-  HIS_DONE.forEach(i => { if (topicsDone['his_' + i] === undefined) topicsDone['his_' + i] = true; });
-  EMP_DONE.forEach(i => { if (topicsDone['emp_' + i] === undefined) topicsDone['emp_' + i] = true; });
-  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
-  localStorage.setItem(prefilledKey, '1');
-}
-// ────────────────────────────────────────────────────────────────
-
 let currentMonth = new Date();
 let currentView = 'month';
 let editingId = null;
@@ -782,6 +827,32 @@ function renderTemario() {
   Object.entries(SUBJECTS).forEach(([key, s]) => {
     const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
     const pct = Math.round(done / s.topics.length * 100);
+
+    // Build topic list — grouped by trimestre if available
+    let topicsHtml = '';
+    if (s.trimestres) {
+      let globalIdx = 0;
+      s.trimestres.forEach(tr => {
+        topicsHtml += `<li style="padding:6px 0 2px;font-size:0.72rem;font-weight:800;color:${s.color};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-top:4px">${tr.label}</li>`;
+        tr.topics.forEach(t => {
+          const i = globalIdx++;
+          const done_t = topicsDone[key + '_' + i] || false;
+          topicsHtml += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+            <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+            <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
+          </li>`;
+        });
+      });
+    } else {
+      s.topics.forEach((t, i) => {
+        const done_t = topicsDone[key + '_' + i] || false;
+        topicsHtml += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+          <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+          <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
+        </li>`;
+      });
+    }
+
     html += `<div class="subject-card">
       <div class="subject-card-header">
         <div class="subject-icon" style="background:${s.color}22">${s.emoji}</div>
@@ -792,18 +863,12 @@ function renderTemario() {
         </div>
       </div>
       <div class="subject-card-body">
-        <ul class="topic-list">`;
-    s.topics.forEach((t, i) => {
-      const done_t = topicsDone[key + '_' + i] || false;
-      html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-        <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-        <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
-      </li>`;
-    });
-    html += `</ul></div></div>`;
+        <ul class="topic-list">${topicsHtml}</ul>
+      </div></div>`;
   });
   document.getElementById('subjects-grid').innerHTML = html;
 }
+
 
 function toggleTopic(key, i, cb) {
   topicsDone[key + '_' + i] = cb.checked;
