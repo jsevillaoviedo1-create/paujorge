@@ -1158,7 +1158,9 @@ plannerWeek = getPlannerMonday(new Date());
 
 
 // ===== FIREBASE SYNC =====
-const SYNC_USER = 'pau2026_user'; // cambia esto a un ID único tuyo si quieres privacidad
+const SYNC_USER = 'pau2026_user';
+let _lastPushTime = 0;
+let _isSyncing = false;
 
 function initFirebaseSync() {
   const { db, ref, onValue, configured } = window._fb;
@@ -1167,15 +1169,27 @@ function initFirebaseSync() {
 
   const dataRef = ref(db, SYNC_USER + '/data');
   onValue(dataRef, (snapshot) => {
+    // Ignore if we just pushed (within 3 seconds) to avoid echo
+    if (Date.now() - _lastPushTime < 3000) {
+      updateSyncStatus('online');
+      return;
+    }
+    _isSyncing = true;
     const remote = snapshot.val();
-    if (remote !== null && remote !== undefined) {
-      // Sync completo: se usa lo que hay en Firebase (incluso arrays vacíos tras eliminar)
-      events        = Array.isArray(remote.events)          ? remote.events        : [];
-      topicsDone    = (remote.topicsDone && typeof remote.topicsDone === 'object') ? remote.topicsDone : {};
-      plannerBlocks = (remote.plannerBlocks && typeof remote.plannerBlocks === 'object') ? remote.plannerBlocks : {};
-      localStorage.setItem('pau_events',  JSON.stringify(events));
-      localStorage.setItem('pau_topics',  JSON.stringify(topicsDone));
-      localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+    if (remote) {
+      // Firebase drops empty arrays — use _empty flag as sentinel
+      if (remote._eventsEmpty || (remote.events && Array.isArray(remote.events))) {
+        events = remote._eventsEmpty ? [] : remote.events;
+        localStorage.setItem('pau_events', JSON.stringify(events));
+      }
+      if (remote.topicsDone !== undefined) {
+        topicsDone = remote.topicsDone || {};
+        localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
+      }
+      if (remote.plannerBlocks !== undefined) {
+        plannerBlocks = remote.plannerBlocks || {};
+        localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+      }
       // Re-render active tab
       const activeTab = document.querySelector('.tab-content.active');
       if (activeTab) {
@@ -1187,6 +1201,7 @@ function initFirebaseSync() {
         if (name === 'estadisticas') renderStats();
       }
     }
+    _isSyncing = false;
     updateSyncStatus('online');
   }, (err) => { updateSyncStatus('error'); });
 }
@@ -1194,8 +1209,21 @@ function initFirebaseSync() {
 function pushToFirebase() {
   const { db, ref, set, configured } = window._fb || {};
   if (!configured || !db) return;
+  _lastPushTime = Date.now();
   const dataRef = ref(db, SYNC_USER + '/data');
-  set(dataRef, { events: events || [], topicsDone: topicsDone || {}, plannerBlocks: plannerBlocks || {} })
+  // Firebase drops empty arrays, so use sentinel flags
+  const payload = {
+    topicsDone: topicsDone || {},
+    plannerBlocks: plannerBlocks || {},
+    _ts: _lastPushTime
+  };
+  if (!events || events.length === 0) {
+    payload._eventsEmpty = true;
+  } else {
+    payload.events = events;
+    payload._eventsEmpty = false;
+  }
+  set(dataRef, payload)
     .then(() => updateSyncStatus('online'))
     .catch(() => updateSyncStatus('error'));
 }
@@ -1213,7 +1241,7 @@ function updateSyncStatus(status) {
   el.innerHTML = `<span style="color:${s.color};font-size:0.78rem">${s.icon} ${s.text}</span>`;
 }
 
-// Patch save functions to also push to Firebase
+// Patch all mutating functions to push to Firebase after local save
 const _origSaveEvent = saveEvent;
 window.saveEvent = function() { _origSaveEvent(); pushToFirebase(); };
 
@@ -1221,7 +1249,14 @@ const _origDeleteEvent = deleteEvent;
 window.deleteEvent = function(id) { _origDeleteEvent(id); pushToFirebase(); };
 
 const _origToggleTopic = toggleTopic;
-window.toggleTopic = function(key, i, cb) { topicsDone[key + '_' + i] = cb.checked; localStorage.setItem('pau_topics', JSON.stringify(topicsDone)); pushToFirebase(); const li = document.getElementById('topic-' + key + '-' + i); li.classList.toggle('done', cb.checked); renderTemario(); };
+window.toggleTopic = function(key, i, cb) {
+  topicsDone[key + '_' + i] = cb.checked;
+  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
+  pushToFirebase();
+  const li = document.getElementById('topic-' + key + '-' + i);
+  li.classList.toggle('done', cb.checked);
+  renderTemario();
+};
 
 const _origSavePlannerBlock = savePlannerBlock;
 window.savePlannerBlock = function() { _origSavePlannerBlock(); pushToFirebase(); };
