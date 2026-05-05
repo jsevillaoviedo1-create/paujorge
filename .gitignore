@@ -1,0 +1,6 @@
+# Claves Firebase — NO subir a GitHub
+firebase-config.js
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planificador PAU 2026 – Asturias</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #6c63ff;
+    --accent2: #00c9a7;
+    --danger: #ff4d6d;
+    --warning: #ffd166;
+    --text: #e8eaf6;
+    --text2: #9299b8;
+    --ing: #4cc9f0;
+    --mat: #f72585;
+    --his: #fb8500;
+    --emp: #06d6a0;
+    --len: #9d4edd;
+    --act: #ffd166;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  header { background: linear-gradient(135deg, #1a1d27 0%, #12152a 100%); border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+  header h1 { font-size: 1.3rem; font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header .subtitle { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .countdown-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; text-align: center; }
+  .countdown-box .label { font-size: 0.7rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+  .countdown-box .days { font-size: 1.5rem; font-weight: 800; color: var(--warning); line-height: 1; }
+
+  /* NAV TABS */
+  .tabs { display: flex; gap: 4px; background: var(--surface); padding: 8px 32px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .tab-btn { background: transparent; border: none; color: var(--text2); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.87rem; font-weight: 500; white-space: nowrap; transition: all 0.2s; }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--accent); color: #fff; }
+
+  /* MAIN */
+  main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* CALENDAR */
+  .cal-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .cal-header h2 { font-size: 1.2rem; font-weight: 700; }
+  .btn { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn.danger { background: var(--danger); }
+  .btn.small { padding: 4px 10px; font-size: 0.75rem; }
+  .month-nav { display: flex; align-items: center; gap: 12px; }
+  .month-nav button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
+  .month-nav button:hover { background: var(--accent); border-color: var(--accent); }
+  .month-name { font-size: 1.1rem; font-weight: 700; min-width: 160px; text-align: center; }
+
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-label { text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--text2); text-transform: uppercase; padding: 6px 0; letter-spacing: 0.5px; }
+  .cal-day { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; min-height: 100px; padding: 8px; cursor: pointer; transition: all 0.2s; position: relative; }
+  .cal-day:hover { border-color: var(--accent); background: var(--surface2); }
+  .cal-day.today { border-color: var(--accent); border-width: 2px; }
+  .cal-day.other-month { opacity: 0.35; }
+  .cal-day.past { opacity: 0.55; }
+  .day-number { font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; }
+  .cal-day.today .day-number { color: var(--accent); }
+  .event-pill { font-size: 0.68rem; padding: 2px 6px; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; font-weight: 600; }
+  .event-pill.ing { background: #4cc9f022; color: var(--ing); border-left: 3px solid var(--ing); }
+  .event-pill.mat { background: #f7258522; color: var(--mat); border-left: 3px solid var(--mat); }
+  .event-pill.his { background: #fb850022; color: var(--his); border-left: 3px solid var(--his); }
+  .event-pill.emp { background: #06d6a022; color: var(--emp); border-left: 3px solid var(--emp); }
+  .event-pill.len { background: #9d4edd22; color: var(--len); border-left: 3px solid var(--len); }
+  .event-pill.act { background: #ffd16622; color: var(--act); border-left: 3px solid var(--act); }
+  .more-events { font-size: 0.65rem; color: var(--text2); margin-top: 2px; }
+
+  /* WEEK VIEW */
+  .week-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 2px; }
+  .week-time { font-size: 0.7rem; color: var(--text2); text-align: right; padding-right: 8px; padding-top: 4px; }
+  .week-day-header { text-align: center; padding: 6px; font-size: 0.78rem; font-weight: 700; background: var(--surface); border-radius: 8px; }
+  .week-day-header.today-col { background: var(--accent); }
+  .week-cell { background: var(--surface); border-radius: 6px; min-height: 44px; padding: 2px; position: relative; cursor: pointer; transition: background 0.15s; }
+  .week-cell:hover { background: var(--surface2); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.8rem; color: var(--text2); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; outline: none; transition: border-color 0.2s; font-family: inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; flex-wrap: wrap; }
+  .color-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  /* TEMARIO PANEL */
+  .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .subject-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+  .subject-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .subject-card-header { padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+  .subject-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .subject-card-body { padding: 0 18px 16px; }
+  .topic-list { list-style: none; }
+  .topic-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; cursor: pointer; transition: color 0.2s; }
+  .topic-item:last-child { border-bottom: none; }
+  .topic-item:hover { color: var(--accent); }
+  .topic-item input[type=checkbox] { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; width: 15px; height: 15px; cursor: pointer; }
+  .topic-item.done { opacity: 0.5; text-decoration: line-through; }
+  .progress-bar-wrap { background: var(--surface2); border-radius: 99px; height: 5px; margin: 10px 0 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+  .progress-label { font-size: 0.73rem; color: var(--text2); text-align: right; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
+  .stat-card .val { font-size: 2rem; font-weight: 800; }
+  .stat-card .lbl { font-size: 0.75rem; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .subject-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .subj-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .subj-stat-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+  .bar-chart-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.78rem; }
+  .bar-outer { flex: 1; background: var(--surface2); border-radius: 99px; height: 8px; overflow: hidden; }
+  .bar-inner { height: 100%; border-radius: 99px; transition: width 0.5s; }
+
+  /* EVENT DETAIL */
+  .event-detail { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 14px; }
+  .event-detail-color { width: 5px; border-radius: 99px; align-self: stretch; flex-shrink: 0; }
+  .event-detail-body h4 { font-size: 0.92rem; font-weight: 700; }
+  .event-detail-meta { font-size: 0.78rem; color: var(--text2); margin-top: 4px; }
+  .event-detail-desc { font-size: 0.82rem; color: var(--text2); margin-top: 6px; }
+  .event-actions { margin-left: auto; display: flex; gap: 6px; }
+
+  /* AGENDA VIEW */
+  .agenda-day { margin-bottom: 20px; }
+  .agenda-day-header { font-size: 0.82rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .agenda-day-header.today-label { color: var(--accent); }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 0.85rem; box-shadow: var(--shadow); z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.3s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+
+  /* ===== PLANIFICADOR SEMANAL ===== */
+  .planner-wrap { overflow-x: auto; }
+  .planner-grid { display: grid; grid-template-columns: 70px repeat(7, 1fr); min-width: 700px; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .planner-header-cell { background: var(--surface2); padding: 10px 6px; text-align: center; font-size: 0.78rem; font-weight: 700; border-bottom: 2px solid var(--border); border-right: 1px solid var(--border); }
+  .planner-header-cell:last-child { border-right: none; }
+  .planner-header-cell.today-col { background: linear-gradient(135deg, #6c63ff33, #6c63ff11); color: var(--accent); }
+  .planner-time-cell { background: var(--surface); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0 6px; display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 4px; }
+  .planner-time-cell span { font-size: 0.68rem; color: var(--text2); font-weight: 600; white-space: nowrap; }
+  .planner-slot { background: var(--surface); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 52px; position: relative; cursor: pointer; transition: background 0.15s; }
+  .planner-slot:last-child { border-right: none; }
+  .planner-slot:hover { background: var(--surface2); }
+  .planner-slot.has-block { background: var(--surface); cursor: default; }
+  .planner-block { position: absolute; left: 2px; right: 2px; border-radius: 6px; padding: 4px 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer; z-index: 2; overflow: hidden; transition: filter 0.15s, transform 0.15s; display: flex; flex-direction: column; justify-content: flex-start; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .planner-block:hover { filter: brightness(1.15); transform: scaleX(1.02); }
+  .planner-block .block-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .planner-block .block-time { font-size: 0.65rem; opacity: 0.85; margin-top: 1px; }
+  .planner-block .block-del { position: absolute; top: 3px; right: 4px; background: rgba(0,0,0,0.35); border: none; color: #fff; border-radius: 4px; width: 16px; height: 16px; font-size: 0.65rem; cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1; }
+  .planner-block:hover .block-del { display: flex; }
+
+  /* drag-select overlay */
+  .planner-slot.selecting { background: #6c63ff22; border: 1px dashed var(--accent); }
+
+  /* modal planificador */
+  .planner-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 460px; box-shadow: var(--shadow); animation: slideUp 0.2s ease; }
+
+  .week-nav { display: flex; align-items: center; gap: 10px; }
+  .week-label { font-size: 1rem; font-weight: 700; min-width: 200px; text-align: center; }
+
+  .planner-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  .copy-week-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .copy-week-bar select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; }
+
+  .planner-actions-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; justify-content: space-between; }
+
+  .hour-row-label { grid-column: 1; }
+
+  /* resize handle */
+  .resize-handle { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; cursor: ns-resize; background: rgba(255,255,255,0.08); border-radius: 0 0 6px 6px; }
+  .resize-handle:hover { background: rgba(255,255,255,0.2); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    main { padding: 16px; }
+    .tabs { padding: 8px 16px; }
+    header { padding: 12px 16px; }
+    .calendar-grid { gap: 2px; }
+    .cal-day { min-height: 60px; padding: 4px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  .view-toggle { display: flex; gap: 4px; }
+  .view-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+  .view-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .today-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+  .today-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  select option { background: #22263a; }
+
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-chip { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); padding: 4px 12px; border-radius: 99px; cursor: pointer; font-size: 0.78rem; transition: all 0.2s; }
+  .filter-chip:hover, .filter-chip.active { border-color: var(--accent); color: var(--text); }
+  .filter-chip.ing.active { border-color: var(--ing); color: var(--ing); background: #4cc9f011; }
+  .filter-chip.mat.active { border-color: var(--mat); color: var(--mat); background: #f7258511; }
+  .filter-chip.his.active { border-color: var(--his); color: var(--his); background: #fb850011; }
+  .filter-chip.emp.active { border-color: var(--emp); color: var(--emp); background: #06d6a011; }
+  .filter-chip.len.active { border-color: var(--len); color: var(--len); background: #9d4edd11; }
+  .filter-chip.act.active { border-color: var(--act); color: var(--act); background: #ffd16611; }
+</style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyCuxP8rYx6ALkFKA4fENoX-v5f0FgUa9w8",
+      authDomain:        "paujorge-af95b.firebaseapp.com",
+      databaseURL:       "https://paujorge-af95b-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "paujorge-af95b",
+      storageBucket:     "paujorge-af95b.firebasestorage.app",
+      messagingSenderId: "1004356931454",
+      appId:             "1:1004356931454:web:6fdfb6861eb4f5b2a7ad2f"
+    };
+
+    let db = null;
+    let fbConfigured = false;
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getDatabase(app);
+      fbConfigured = true;
+    } catch(e) { console.warn("Firebase error:", e); }
+
+    window._fb = { db, ref, set, onValue, configured: fbConfigured };
+
+    window.addEventListener('load', () => {
+      if (fbConfigured) { initFirebaseSync(); }
+      else { updateSyncStatus('offline'); }
+    });
+  </script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6c63ff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PAU 2026">
+  <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📚 Planificador PAU 2026</h1>
+    <div class="subtitle">2º Bachillerato · Ciencias Sociales · Asturias</div>
+  </div>
+  <div class="header-right">
+    <div class="countdown-box">
+      <div class="label">📅 Días para la PAU</div>
+      <div class="days" id="countdown-days">—</div>
+    </div>
+    <button class="btn" onclick="openAddModal()">＋ Añadir evento</button>
+
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div id="sync-status"><span style="color:var(--text2);font-size:0.78rem">⚫ Sin Firebase</span></div>
+      <button class="btn secondary small" onclick="exportData()" title="Exportar datos a JSON">📦 Exportar</button>
+      <button class="btn secondary small" onclick="importData()" title="Importar datos desde JSON">📥 Importar</button>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('calendario', this)">📅 Calendario</button>
+  <button class="tab-btn" onclick="switchTab('agenda', this)">📋 Agenda</button>
+  <button class="tab-btn" onclick="switchTab('temario', this)">📖 Temario</button>
+  <button class="tab-btn" onclick="switchTab('planificador', this)">🗓️ Horario Semanal</button>
+  <button class="tab-btn" onclick="switchTab('estadisticas', this)">📊 Estadísticas</button>
+</div>
+
+<main>
+  <!-- ===== CALENDARIO ===== -->
+  <div id="tab-calendario" class="tab-content active">
+    <div class="cal-header">
+      <div class="month-nav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <span class="month-name" id="month-name"></span>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <button class="today-btn" onclick="goToToday()">Hoy</button>
+      <div class="view-toggle">
+        <button class="view-btn active" id="vbtn-month" onclick="setView('month')">Mes</button>
+        <button class="view-btn" id="vbtn-week" onclick="setView('week')">Semana</button>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ing)"></div>Inglés</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--mat)"></div>Matemáticas CCSS</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--his)"></div>Historia de España</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--emp)"></div>Empresa/Modelos Negocio</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--len)"></div>Lengua y Literatura</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--act)"></div>Actividad Personal</div>
+    </div>
+    <div id="calendar-container"></div>
+  </div>
+
+  <!-- ===== AGENDA ===== -->
+  <div id="tab-agenda" class="tab-content">
+    <div class="cal-header">
+      <h2>Próximos eventos</h2>
+      <button class="btn" onclick="openAddModal()">＋ Añadir evento</button>
+    </div>
+    <div class="filter-bar" id="filter-bar">
+      <span class="filter-chip active" data-filter="all" onclick="setFilter(this,'all')">Todos</span>
+      <span class="filter-chip ing" data-filter="ing" onclick="setFilter(this,'ing')">🇬🇧 Inglés</span>
+      <span class="filter-chip mat" data-filter="mat" onclick="setFilter(this,'mat')">📐 Matemáticas</span>
+      <span class="filter-chip his" data-filter="his" onclick="setFilter(this,'his')">🏛️ Historia</span>
+      <span class="filter-chip emp" data-filter="emp" onclick="setFilter(this,'emp')">💼 Empresa</span>
+      <span class="filter-chip len" data-filter="len" onclick="setFilter(this,'len')">📝 Lengua</span>
+      <span class="filter-chip act" data-filter="act" onclick="setFilter(this,'act')">⚡ Actividad</span>
+    </div>
+    <div id="agenda-container"></div>
+  </div>
+
+  <!-- ===== TEMARIO ===== -->
+  <div id="tab-temario" class="tab-content">
+    <div class="cal-header">
+      <h2>Temario PAU 2026</h2>
+      <span style="font-size:0.82rem;color:var(--text2)">Marca los temas que ya has estudiado ✓</span>
+    </div>
+    <div class="subjects-grid" id="subjects-grid"></div>
+  </div>
+
+
+  <!-- ===== PLANIFICADOR SEMANAL ===== -->
+  <div id="tab-planificador" class="tab-content">
+    <div class="planner-actions-bar">
+      <div class="week-nav">
+        <button class="month-nav" style="display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;font-size:1.1rem" onclick="changePlannerWeek(-1)">‹</button>
+        <span class="week-label" id="planner-week-label"></span>
+        <button class="month-nav" style="display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;font-size:1.1rem" onclick="changePlannerWeek(1)">›</button>
+        <button class="today-btn" onclick="goToPlannerToday()">Esta semana</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn secondary small" onclick="clearPlannerWeek()">🗑 Limpiar semana</button>
+        <button class="btn secondary small" onclick="copyLastWeek()">📋 Copiar semana anterior</button>
+        <button class="btn small" onclick="openPlannerModal()">＋ Añadir bloque</button>
+      </div>
+    </div>
+    <div class="planner-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ing)"></div>Inglés</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--mat)"></div>Matemáticas</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--his)"></div>Historia</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--emp)"></div>Empresa</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--len)"></div>Lengua</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--act)"></div>Actividad</div>
+    </div>
+    <div class="planner-wrap">
+      <div class="planner-grid" id="planner-grid"></div>
+    </div>
+    <p style="font-size:0.75rem;color:var(--text2);margin-top:10px">💡 Haz clic en cualquier celda para añadir un bloque de estudio · Arrastra el borde inferior para cambiar la duración · Haz clic sobre un bloque para editarlo</p>
+  </div>
+
+  <!-- ===== ESTADÍSTICAS ===== -->
+  <div id="tab-estadisticas" class="tab-content">
+    <h2 style="margin-bottom:20px">Resumen de estudio</h2>
+    <div class="stats-grid" id="stats-grid"></div>
+    <h3 style="margin-bottom:14px;color:var(--text2);font-size:0.9rem;text-transform:uppercase;letter-spacing:1px">Progreso por asignatura</h3>
+    <div class="subject-stats" id="subject-stats"></div>
+  </div>
+</main>
+
+<!-- MODAL AÑADIR/EDITAR EVENTO -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="modal-title">Añadir evento</h3>
+    <div class="form-group">
+      <label>Título del evento *</label>
+      <input type="text" id="ev-title" placeholder="Ej: Repasar subordinadas, Ejercicios funciones..." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha *</label>
+        <input type="date" id="ev-date" />
+      </div>
+      <div class="form-group">
+        <label>Hora inicio</label>
+        <input type="time" id="ev-time-start" value="09:00" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora fin</label>
+        <input type="time" id="ev-time-end" value="11:00" />
+      </div>
+      <div class="form-group">
+        <label>Asignatura / Tipo</label>
+        <select id="ev-subject">
+          <option value="ing">🇬🇧 Inglés</option>
+          <option value="mat">📐 Matemáticas CCSS</option>
+          <option value="his">🏛️ Historia de España</option>
+          <option value="emp">💼 Empresa y Modelos de Negocio</option>
+          <option value="len">📝 Lengua y Literatura</option>
+          <option value="act">⚡ Actividad Personal</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Tema / Descripción</label>
+      <textarea id="ev-desc" placeholder="Ej: Bloque 3 - Historia de España: Transición democrática. Repasar apartados 3.1-3.5..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Prioridad</label>
+      <select id="ev-priority">
+        <option value="normal">Normal</option>
+        <option value="alta">🔴 Alta</option>
+        <option value="media">🟡 Media</option>
+        <option value="baja">🟢 Baja</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModalDirect()">Cancelar</button>
+      <button class="btn danger small" id="btn-delete-ev" style="display:none" onclick="deleteCurrentEvent()">🗑 Eliminar</button>
+      <button class="btn" onclick="saveEvent()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL PLANIFICADOR SEMANAL -->
+<div class="modal-overlay" id="planner-modal-overlay" onclick="closePlannerModal(event)">
+  <div class="planner-modal" onclick="event.stopPropagation()">
+    <h3 id="planner-modal-title">Añadir bloque de estudio</h3>
+    <div class="form-group">
+      <label>Asignatura / Tipo *</label>
+      <select id="pb-subject">
+        <option value="ing">🇬🇧 Inglés</option>
+        <option value="mat">📐 Matemáticas CCSS</option>
+        <option value="his">🏛️ Historia de España</option>
+        <option value="emp">💼 Empresa y Modelos de Negocio</option>
+        <option value="len">📝 Lengua y Literatura</option>
+        <option value="act">⚡ Actividad Personal</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Título / Actividad *</label>
+      <input type="text" id="pb-title" placeholder="Ej: Derivadas e integrales, Comprensión lectora..." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Día de la semana</label>
+        <select id="pb-day">
+          <option value="0">Lunes</option>
+          <option value="1">Martes</option>
+          <option value="2">Miércoles</option>
+          <option value="3">Jueves</option>
+          <option value="4">Viernes</option>
+          <option value="5">Sábado</option>
+          <option value="6">Domingo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hora inicio *</label>
+        <select id="pb-start">
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora fin *</label>
+        <select id="pb-end">
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notas</label>
+        <input type="text" id="pb-notes" placeholder="Temas concretos..." />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closePlannerModalDirect()">Cancelar</button>
+      <button class="btn danger small" id="pb-delete-btn" style="display:none" onclick="deletePlannerBlock()">🗑 Eliminar</button>
+      <button class="btn" onclick="savePlannerBlock()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const SUBJECTS = {
+  ing: { name: 'Inglés', color: 'var(--ing)', emoji: '🇬🇧',
+    topics: [
+      'Comprensión lectora: estrategias y vocabulario', 'Use of English: gramática avanzada',
+      'Modal verbs y verbos defectivos', 'Reported speech y estilo indirecto',
+      'Tiempos verbales: perfects, conditionals', 'Passive voice y causative',
+      'Relative clauses (defining/non-defining)', 'Writing: formal letter / essay',
+      'Vocabulary: topics sociales y culturales', 'Listening y speaking strategies',
+      'Phrasal verbs más frecuentes PAU', 'Conectores y cohesión textual'
+    ]
+  },
+  mat: { name: 'Matemáticas CCSS', color: 'var(--mat)', emoji: '📐',
+    topics: [
+      'Álgebra: matrices y determinantes', 'Sistemas de ecuaciones lineales (Cramer, Gauss)',
+      'Análisis: límites y continuidad', 'Derivadas: reglas y aplicaciones',
+      'Crecimiento, decrecimiento y extremos', 'Integrales: cálculo de primitivas',
+      'Integrales: área entre curvas', 'Estadística descriptiva: medidas',
+      'Distribuciones de probabilidad (Binomial, Normal)', 'Inferencia estadística básica',
+      'Programación lineal', 'Funciones: dominio, imagen y gráficas'
+    ]
+  },
+  his: { name: 'Historia de España', color: 'var(--his)', emoji: '🏛️',
+    topics: [
+      'La Restauración borbónica (1874-1902)', 'Crisis del 98 y regeneracionismo',
+      'El reinado de Alfonso XIII (1902-1931)', 'La Segunda República Española',
+      'La Guerra Civil Española (1936-1939)', 'La dictadura franquista: etapas',
+      'Economía y sociedad en el franquismo', 'La Transición democrática',
+      'La Constitución de 1978', 'Los gobiernos democráticos (1979-2000)',
+      'España en la Unión Europea', 'Arte y cultura contemporánea española'
+    ]
+  },
+  emp: { name: 'Empresa y Modelos de Negocio', color: 'var(--emp)', emoji: '💼',
+    topics: [
+      'La empresa: concepto, tipos y funciones', 'Análisis del entorno: DAFO y PESTEL',
+      'Plan de empresa y modelo Canvas', 'Organización interna: organigramas',
+      'Recursos humanos y gestión del talento', 'Marketing: producto, precio, plaza, promoción',
+      'Contabilidad básica: balance y cuenta de resultados', 'Fuentes de financiación',
+      'Inversión y análisis de proyectos (VAN, TIR)', 'Fiscalidad empresarial básica',
+      'Innovación y emprendimiento social', 'Start-ups y modelos de negocio digitales'
+    ]
+  },
+  len: { name: 'Lengua y Literatura', color: 'var(--len)', emoji: '📝',
+    topics: [
+      'Comentario de texto: pasos y estructura', 'Tipología textual y modalidades',
+      'Morfología: categorías gramaticales', 'Sintaxis: análisis de oraciones',
+      'Subordinadas sustantivas, adjetivas y adverbiales', 'Semántica: polisemia, sinonimia',
+      'Literatura S.XX: Generación del 98 (Unamuno, Machado)', 'Novecentismo y vanguardias',
+      'Generación del 27 (Lorca, Alberti, Cernuda)', 'Literatura de posguerra',
+      'Novela y poesía contemporánea', 'Texto expositivo-argumentativo: redacción'
+    ]
+  },
+  act: { name: 'Actividad Personal', color: 'var(--act)', emoji: '⚡',
+    topics: [
+      'Simulacro de examen PAU', 'Revisión de apuntes', 'Tutoría con profesor',
+      'Práctica de ejercicios', 'Trabajo o proyecto', 'Descanso planificado',
+      'Repaso general', 'Otra actividad'
+    ]
+  }
+};
+
+let events = JSON.parse(localStorage.getItem('pau_events') || '[]');
+let topicsDone = JSON.parse(localStorage.getItem('pau_topics') || '{}');
+let currentMonth = new Date();
+let currentView = 'month';
+let editingId = null;
+let agendaFilter = 'all';
+
+// PAU 2026 Asturias (aprox. 3 junio 2026)
+const PAU_DATE = new Date('2026-06-03');
+
+// ===== COUNTDOWN =====
+function updateCountdown() {
+  const now = new Date();
+  const diff = Math.ceil((PAU_DATE - now) / (1000 * 60 * 60 * 24));
+  document.getElementById('countdown-days').textContent = diff > 0 ? diff : '¡Hoy!';
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+
+// ===== TABS =====
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'calendario') renderCalendar();
+  if (name === 'agenda') renderAgenda();
+  if (name === 'temario') renderTemario();
+  if (name === 'planificador') renderPlanner();
+  if (name === 'estadisticas') renderStats();
+}
+
+// ===== CALENDAR =====
+function setView(v) {
+  currentView = v;
+  document.getElementById('vbtn-month').classList.toggle('active', v === 'month');
+  document.getElementById('vbtn-week').classList.toggle('active', v === 'week');
+  renderCalendar();
+}
+
+function changeMonth(dir) {
+  if (currentView === 'week') {
+    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), currentMonth.getDate() + dir * 7);
+  } else {
+    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir, 1);
+  }
+  renderCalendar();
+}
+
+function goToToday() {
+  currentMonth = new Date();
+  renderCalendar();
+}
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+function renderCalendar() {
+  if (currentView === 'week') { renderWeek(); return; }
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+  document.getElementById('month-name').textContent = `${MONTHS[month]} ${year}`;
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon-based
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = '<div class="calendar-grid">';
+  DAYS.forEach(d => html += `<div class="cal-day-label">${d}</div>`);
+  // prev month days
+  const prevLast = new Date(year, month, 0).getDate();
+  for (let i = startDow - 1; i >= 0; i--) {
+    const d = prevLast - i;
+    const dt = dateStr(new Date(year, month - 1, d));
+    html += `<div class="cal-day other-month" onclick="openAddModal('${dt}')">${buildDayContent(d, dt, true)}</div>`;
+  }
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dt = dateStr(new Date(year, month, d));
+    const dayDate = new Date(year, month, d);
+    const isToday = dayDate.getTime() === today.getTime();
+    const isPast = dayDate < today;
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    if (isPast) cls += ' past';
+    html += `<div class="${cls}" onclick="openAddModal('${dt}')">${buildDayContent(d, dt, false)}</div>`;
+  }
+  // next month
+  const totalCells = Math.ceil((startDow + lastDay.getDate()) / 7) * 7;
+  const remaining = totalCells - startDow - lastDay.getDate();
+  for (let d = 1; d <= remaining; d++) {
+    const dt = dateStr(new Date(year, month + 1, d));
+    html += `<div class="cal-day other-month" onclick="openAddModal('${dt}')">${buildDayContent(d, dt, true)}</div>`;
+  }
+  html += '</div>';
+  document.getElementById('calendar-container').innerHTML = html;
+}
+
+function buildDayContent(d, dt, other) {
+  const dayEvents = events.filter(e => e.date === dt);
+  let html = `<div class="day-number">${d}</div>`;
+  const show = dayEvents.slice(0, 3);
+  show.forEach(ev => {
+    html += `<div class="event-pill ${ev.subject}" onclick="event.stopPropagation();editEvent('${ev.id}')" title="${ev.title}">${SUBJECTS[ev.subject].emoji} ${ev.title}</div>`;
+  });
+  if (dayEvents.length > 3) html += `<div class="more-events">+${dayEvents.length - 3} más</div>`;
+  return html;
+}
+
+function renderWeek() {
+  const base = new Date(currentMonth);
+  let dow = base.getDay(); dow = dow === 0 ? 6 : dow - 1;
+  const monday = new Date(base); monday.setDate(base.getDate() - dow);
+  const days = [];
+  for (let i = 0; i < 7; i++) { const d = new Date(monday); d.setDate(monday.getDate() + i); days.push(d); }
+  const startStr = `${days[0].getDate()} ${MONTHS[days[0].getMonth()]}`;
+  const endStr = `${days[6].getDate()} ${MONTHS[days[6].getMonth()]} ${days[6].getFullYear()}`;
+  document.getElementById('month-name').textContent = `${startStr} – ${endStr}`;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const hours = [];
+  for (let h = 7; h <= 22; h++) hours.push(h);
+  let html = '<div class="week-grid">';
+  html += '<div class="week-time"></div>';
+  days.forEach(d => {
+    const isToday = d.getTime() === today.getTime();
+    html += `<div class="week-day-header${isToday?' today-col':''}">${DAYS[days.indexOf(d)]}<br><span style="font-size:1rem;font-weight:800">${d.getDate()}</span></div>`;
+  });
+  hours.forEach(h => {
+    html += `<div class="week-time">${h}:00</div>`;
+    days.forEach(d => {
+      const dt = dateStr(d);
+      const slotEvents = events.filter(e => e.date === dt && e.timeStart && parseInt(e.timeStart) === h);
+      let inner = '';
+      slotEvents.forEach(ev => {
+        inner += `<div class="event-pill ${ev.subject}" style="margin:1px 0" onclick="event.stopPropagation();editEvent('${ev.id}')">${SUBJECTS[ev.subject].emoji} ${ev.title}</div>`;
+      });
+      html += `<div class="week-cell" onclick="openAddModal('${dt}','${h}:00')">${inner}</div>`;
+    });
+  });
+  html += '</div>';
+  document.getElementById('calendar-container').innerHTML = html;
+}
+
+// ===== AGENDA =====
+function setFilter(el, f) {
+  agendaFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderAgenda();
+}
+
+function renderAgenda() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let filtered = events.filter(e => new Date(e.date + 'T00:00:00') >= today);
+  if (agendaFilter !== 'all') filtered = filtered.filter(e => e.subject === agendaFilter);
+  filtered.sort((a, b) => a.date.localeCompare(b.date) || (a.timeStart||'').localeCompare(b.timeStart||''));
+  if (filtered.length === 0) {
+    document.getElementById('agenda-container').innerHTML = `<div style="text-align:center;color:var(--text2);padding:60px 0">No hay eventos próximos. ¡Añade uno! 📅</div>`;
+    return;
+  }
+  const byDay = {};
+  filtered.forEach(e => { if (!byDay[e.date]) byDay[e.date] = []; byDay[e.date].push(e); });
+  let html = '';
+  Object.keys(byDay).sort().forEach(dt => {
+    const d = new Date(dt + 'T00:00:00');
+    const isToday = d.getTime() === today.getTime();
+    const label = isToday ? 'Hoy' : `${DAYS[(d.getDay()||7)-1]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    html += `<div class="agenda-day"><div class="agenda-day-header${isToday?' today-label':''}">${label}</div>`;
+    byDay[dt].forEach(ev => {
+      const s = SUBJECTS[ev.subject];
+      const timeStr = ev.timeStart ? `${ev.timeStart}${ev.timeEnd?' – '+ev.timeEnd:''}` : 'Sin hora';
+      const prioLabel = ev.priority && ev.priority !== 'normal' ? ` · ${ev.priority === 'alta' ? '🔴' : ev.priority === 'media' ? '🟡' : '🟢'} ${ev.priority}` : '';
+      html += `<div class="event-detail">
+        <div class="event-detail-color" style="background:${s.color}"></div>
+        <div class="event-detail-body" style="flex:1">
+          <h4>${s.emoji} ${ev.title}</h4>
+          <div class="event-detail-meta">${s.name} · ${timeStr}${prioLabel}</div>
+          ${ev.desc ? `<div class="event-detail-desc">${ev.desc}</div>` : ''}
+        </div>
+        <div class="event-actions">
+          <button class="btn small secondary" onclick="editEvent('${ev.id}')">✏️</button>
+          <button class="btn small danger" onclick="deleteEvent('${ev.id}')">🗑</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('agenda-container').innerHTML = html;
+}
+
+// ===== TEMARIO =====
+function renderTemario() {
+  let html = '';
+  Object.entries(SUBJECTS).forEach(([key, s]) => {
+    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = Math.round(done / s.topics.length * 100);
+    html += `<div class="subject-card">
+      <div class="subject-card-header">
+        <div class="subject-icon" style="background:${s.color}22">${s.emoji}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:0.9rem">${s.name}</div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+          <div class="progress-label">${done}/${s.topics.length} temas · ${pct}%</div>
+        </div>
+      </div>
+      <div class="subject-card-body">
+        <ul class="topic-list">`;
+    s.topics.forEach((t, i) => {
+      const done_t = topicsDone[key + '_' + i] || false;
+      html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+        <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+        <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
+      </li>`;
+    });
+    html += `</ul></div></div>`;
+  });
+  document.getElementById('subjects-grid').innerHTML = html;
+}
+
+function toggleTopic(key, i, cb) {
+  topicsDone[key + '_' + i] = cb.checked;
+  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
+  const li = document.getElementById(`topic-${key}-${i}`);
+  li.classList.toggle('done', cb.checked);
+  renderTemario();
+}
+
+// ===== STATS =====
+function renderStats() {
+  const total = events.length;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcoming = events.filter(e => new Date(e.date + 'T00:00:00') >= today).length;
+  const totalTopics = Object.values(SUBJECTS).reduce((a, s) => a + s.topics.length, 0);
+  const doneTops = Object.keys(topicsDone).filter(k => topicsDone[k]).length;
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="val" style="color:var(--accent)">${total}</div><div class="lbl">Eventos totales</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--accent2)">${upcoming}</div><div class="lbl">Próximos eventos</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--warning)">${doneTops}</div><div class="lbl">Temas completados</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--danger)">${totalTopics - doneTops}</div><div class="lbl">Temas pendientes</div></div>
+    <div class="stat-card"><div class="val" style="color:var(--emp)">${Math.round(doneTops/totalTopics*100)}%</div><div class="lbl">Progreso global</div></div>
+  `;
+  let subjHtml = '';
+  Object.entries(SUBJECTS).forEach(([key, s]) => {
+    const evCount = events.filter(e => e.subject === key).length;
+    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = Math.round(done / s.topics.length * 100);
+    subjHtml += `<div class="subj-stat">
+      <div class="subj-stat-name" style="color:${s.color}">${s.emoji} ${s.name}</div>
+      <div class="bar-chart-row"><span style="min-width:90px">Temas:</span><div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${s.color}"></div></div><span>${pct}%</span></div>
+      <div style="font-size:0.75rem;color:var(--text2);margin-top:6px">${evCount} sesiones de estudio programadas · ${done}/${s.topics.length} temas</div>
+    </div>`;
+  });
+  document.getElementById('subject-stats').innerHTML = subjHtml;
+}
+
+// ===== MODAL =====
+function openAddModal(date, time) {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Añadir evento';
+  document.getElementById('ev-title').value = '';
+  document.getElementById('ev-date').value = date || dateStr(new Date());
+  document.getElementById('ev-time-start').value = time || '09:00';
+  document.getElementById('ev-time-end').value = '';
+  document.getElementById('ev-subject').value = 'ing';
+  document.getElementById('ev-desc').value = '';
+  document.getElementById('ev-priority').value = 'normal';
+  document.getElementById('btn-delete-ev').style.display = 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('ev-title').focus();
+}
+
+function editEvent(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Editar evento';
+  document.getElementById('ev-title').value = ev.title;
+  document.getElementById('ev-date').value = ev.date;
+  document.getElementById('ev-time-start').value = ev.timeStart || '09:00';
+  document.getElementById('ev-time-end').value = ev.timeEnd || '';
+  document.getElementById('ev-subject').value = ev.subject;
+  document.getElementById('ev-desc').value = ev.desc || '';
+  document.getElementById('ev-priority').value = ev.priority || 'normal';
+  document.getElementById('btn-delete-ev').style.display = 'inline-flex';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  const date = document.getElementById('ev-date').value;
+  if (!title || !date) { showToast('⚠️ El título y la fecha son obligatorios'); return; }
+  const ev = {
+    id: editingId || 'ev_' + Date.now(),
+    title, date,
+    timeStart: document.getElementById('ev-time-start').value,
+    timeEnd: document.getElementById('ev-time-end').value,
+    subject: document.getElementById('ev-subject').value,
+    desc: document.getElementById('ev-desc').value.trim(),
+    priority: document.getElementById('ev-priority').value
+  };
+  if (editingId) {
+    events = events.map(e => e.id === editingId ? ev : e);
+    showToast('✅ Evento actualizado');
+  } else {
+    events.push(ev);
+    showToast('✅ Evento añadido');
+  }
+  localStorage.setItem('pau_events', JSON.stringify(events));
+  closeModalDirect();
+  const activeTab = document.querySelector('.tab-content.active').id.replace('tab-', '');
+  if (activeTab === 'calendario') renderCalendar();
+  if (activeTab === 'agenda') renderAgenda();
+  if (activeTab === 'estadisticas') renderStats();
+}
+
+function deleteEvent(id) {
+  events = events.filter(e => e.id !== id);
+  localStorage.setItem('pau_events', JSON.stringify(events));
+  showToast('🗑 Evento eliminado');
+  const activeTab = document.querySelector('.tab-content.active').id.replace('tab-', '');
+  if (activeTab === 'calendario') renderCalendar();
+  if (activeTab === 'agenda') renderAgenda();
+  if (activeTab === 'estadisticas') renderStats();
+}
+
+function deleteCurrentEvent() {
+  if (editingId) { deleteEvent(editingId); closeModalDirect(); }
+}
+
+// ===== HELPERS =====
+function dateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModalDirect(); closePlannerModalDirect(); }
+  if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('open') && !e.target.matches('textarea')) saveEvent();
+});
+
+
+// ===== PLANIFICADOR SEMANAL =====
+let plannerWeek = new Date(); // reference Monday
+let plannerBlocks = JSON.parse(localStorage.getItem('pau_planner') || '{}');
+let editingBlockId = null;
+
+const PLANNER_HOURS = [];
+for (let h = 6; h <= 23; h++) PLANNER_HOURS.push(h);
+const SLOT_HEIGHT = 52; // px per hour slot
+
+function getPlannerMonday(d) {
+  const day = new Date(d);
+  const dow = day.getDay();
+  const diff = dow === 0 ? -6 : 1 - dow;
+  day.setDate(day.getDate() + diff);
+  day.setHours(0,0,0,0);
+  return day;
+}
+
+function changePlannerWeek(dir) {
+  plannerWeek = new Date(plannerWeek);
+  plannerWeek.setDate(plannerWeek.getDate() + dir * 7);
+  renderPlanner();
+}
+
+function goToPlannerToday() {
+  plannerWeek = getPlannerMonday(new Date());
+  renderPlanner();
+}
+
+function getPlannerWeekKey(monday) {
+  return dateStr(monday);
+}
+
+function renderPlanner() {
+  const monday = getPlannerMonday(plannerWeek);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push(d);
+  }
+  const endSun = days[6];
+  document.getElementById('planner-week-label').textContent =
+    `${days[0].getDate()} ${MONTHS[days[0].getMonth()]} – ${endSun.getDate()} ${MONTHS[endSun.getMonth()]} ${endSun.getFullYear()}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekKey = getPlannerWeekKey(monday);
+  const blocks = plannerBlocks[weekKey] || [];
+
+  let html = '';
+  // Header row
+  html += '<div class="planner-header-cell" style="background:var(--bg)"></div>';
+  days.forEach((d, i) => {
+    const isToday = d.getTime() === today.getTime();
+    html += `<div class="planner-header-cell${isToday?' today-col':''}">
+      <div>${DAYS[i]}</div>
+      <div style="font-size:1rem;font-weight:800">${d.getDate()}</div>
+      <div style="font-size:0.68rem;opacity:0.6">${MONTHS[d.getMonth()].substring(0,3)}</div>
+    </div>`;
+  });
+
+  // Hour rows
+  PLANNER_HOURS.forEach(h => {
+    html += `<div class="planner-time-cell hour-row-label"><span>${String(h).padStart(2,'0')}:00</span></div>`;
+    days.forEach((d, di) => {
+      const slotBlocks = blocks.filter(b => b.dayIndex === di && parseInt(b.startH) === h);
+      html += `<div class="planner-slot" id="slot-${di}-${h}" onclick="slotClick(${di},${h},event)">`;
+      slotBlocks.forEach(b => {
+        const durationH = b.endH - b.startH;
+        const topOffset = (b.startH - h) === 0 ? 0 : 0;
+        const heightPx = Math.max(durationH * SLOT_HEIGHT, 28);
+        const s = SUBJECTS[b.subject];
+        const colBase = getSubjColorHex(b.subject);
+        html += `<div class="planner-block" 
+          style="background:${colBase}dd;color:#fff;top:1px;height:${heightPx - 3}px;"
+          onclick="event.stopPropagation();editPlannerBlock('${weekKey}','${b.id}')"
+          title="${b.title}&#10;${String(b.startH).padStart(2,'0')}:00 – ${String(b.endH).padStart(2,'0')}:00${b.notes?'&#10;'+b.notes:''}">
+          <button class="block-del" onclick="event.stopPropagation();deletePlannerBlockById('${weekKey}','${b.id}')">×</button>
+          <div class="block-title">${s.emoji} ${b.title}</div>
+          <div class="block-time">${String(b.startH).padStart(2,'0')}:00 – ${String(b.endH).padStart(2,'0')}:00</div>
+          ${b.notes ? `<div style="font-size:0.62rem;opacity:0.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.notes}</div>` : ''}
+        </div>`;
+      });
+      html += '</div>';
+    });
+  });
+
+  document.getElementById('planner-grid').innerHTML = html;
+}
+
+function getSubjColorHex(key) {
+  const map = { ing: '#4cc9f0', mat: '#f72585', his: '#fb8500', emp: '#06d6a0', len: '#9d4edd', act: '#d4a017' };
+  return map[key] || '#6c63ff';
+}
+
+function slotClick(dayIndex, hour, e) {
+  if (e.target.classList.contains('planner-block') || e.target.closest('.planner-block')) return;
+  openPlannerModal(dayIndex, hour);
+}
+
+function openPlannerModal(dayIndex, hour) {
+  editingBlockId = null;
+  document.getElementById('planner-modal-title').textContent = 'Añadir bloque de estudio';
+  document.getElementById('pb-subject').value = 'ing';
+  document.getElementById('pb-title').value = '';
+  document.getElementById('pb-notes').value = '';
+  document.getElementById('pb-day').value = dayIndex !== undefined ? String(dayIndex) : '0';
+  populateHourSelects(hour || 9, (hour || 9) + 2);
+  document.getElementById('pb-delete-btn').style.display = 'none';
+  document.getElementById('planner-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('pb-title').focus(), 100);
+}
+
+function populateHourSelects(startVal, endVal) {
+  const startSel = document.getElementById('pb-start');
+  const endSel = document.getElementById('pb-end');
+  startSel.innerHTML = '';
+  endSel.innerHTML = '';
+  for (let h = 6; h <= 23; h++) {
+    const t = `${String(h).padStart(2,'0')}:00`;
+    startSel.innerHTML += `<option value="${h}" ${h===startVal?'selected':''}>${t}</option>`;
+    if (h > 6) endSel.innerHTML += `<option value="${h}" ${h===endVal?'selected':''}>${t}</option>`;
+  }
+}
+
+function editPlannerBlock(weekKey, blockId) {
+  const blocks = plannerBlocks[weekKey] || [];
+  const b = blocks.find(x => x.id === blockId);
+  if (!b) return;
+  editingBlockId = { weekKey, blockId };
+  document.getElementById('planner-modal-title').textContent = 'Editar bloque';
+  document.getElementById('pb-subject').value = b.subject;
+  document.getElementById('pb-title').value = b.title;
+  document.getElementById('pb-notes').value = b.notes || '';
+  document.getElementById('pb-day').value = String(b.dayIndex);
+  populateHourSelects(b.startH, b.endH);
+  document.getElementById('pb-delete-btn').style.display = 'inline-flex';
+  document.getElementById('planner-modal-overlay').classList.add('open');
+}
+
+function savePlannerBlock() {
+  const title = document.getElementById('pb-title').value.trim();
+  if (!title) { showToast('⚠️ Escribe un título para el bloque'); return; }
+  const startH = parseInt(document.getElementById('pb-start').value);
+  const endH = parseInt(document.getElementById('pb-end').value);
+  if (endH <= startH) { showToast('⚠️ La hora de fin debe ser mayor que la de inicio'); return; }
+
+  const monday = getPlannerMonday(plannerWeek);
+  const weekKey = getPlannerWeekKey(monday);
+
+  const block = {
+    id: (editingBlockId && editingBlockId.blockId) || 'pb_' + Date.now(),
+    subject: document.getElementById('pb-subject').value,
+    title,
+    dayIndex: parseInt(document.getElementById('pb-day').value),
+    startH, endH,
+    notes: document.getElementById('pb-notes').value.trim()
+  };
+
+  if (!plannerBlocks[weekKey]) plannerBlocks[weekKey] = [];
+
+  if (editingBlockId) {
+    const wk = editingBlockId.weekKey;
+    plannerBlocks[wk] = (plannerBlocks[wk] || []).filter(x => x.id !== editingBlockId.blockId);
+    plannerBlocks[weekKey].push(block);
+    showToast('✅ Bloque actualizado');
+  } else {
+    // Check for overlap
+    const existing = plannerBlocks[weekKey].filter(x => x.dayIndex === block.dayIndex);
+    const overlap = existing.some(x => block.startH < x.endH && block.endH > x.startH);
+    if (overlap) { showToast('⚠️ Ya hay un bloque en ese horario'); return; }
+    plannerBlocks[weekKey].push(block);
+    showToast('✅ Bloque añadido');
+  }
+
+  localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+  closePlannerModalDirect();
+  renderPlanner();
+}
+
+function deletePlannerBlock() {
+  if (!editingBlockId) return;
+  deletePlannerBlockById(editingBlockId.weekKey, editingBlockId.blockId);
+  closePlannerModalDirect();
+}
+
+function deletePlannerBlockById(weekKey, blockId) {
+  if (!plannerBlocks[weekKey]) return;
+  plannerBlocks[weekKey] = plannerBlocks[weekKey].filter(x => x.id !== blockId);
+  localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+  showToast('🗑 Bloque eliminado');
+  renderPlanner();
+}
+
+function clearPlannerWeek() {
+  if (!confirm('¿Borrar todos los bloques de esta semana?')) return;
+  const weekKey = getPlannerWeekKey(getPlannerMonday(plannerWeek));
+  plannerBlocks[weekKey] = [];
+  localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+  showToast('🗑 Semana limpiada');
+  renderPlanner();
+}
+
+function copyLastWeek() {
+  const thisMonday = getPlannerMonday(plannerWeek);
+  const lastMonday = new Date(thisMonday);
+  lastMonday.setDate(thisMonday.getDate() - 7);
+  const lastKey = getPlannerWeekKey(lastMonday);
+  const thisKey = getPlannerWeekKey(thisMonday);
+  if (!plannerBlocks[lastKey] || plannerBlocks[lastKey].length === 0) {
+    showToast('⚠️ La semana anterior no tiene bloques'); return;
+  }
+  if (!confirm('¿Copiar todos los bloques de la semana anterior a esta semana?')) return;
+  plannerBlocks[thisKey] = plannerBlocks[lastKey].map(b => ({ ...b, id: 'pb_' + Date.now() + Math.random() }));
+  localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
+  showToast('📋 Semana copiada');
+  renderPlanner();
+}
+
+function closePlannerModal(e) {
+  if (e.target === document.getElementById('planner-modal-overlay')) closePlannerModalDirect();
+}
+function closePlannerModalDirect() {
+  document.getElementById('planner-modal-overlay').classList.remove('open');
+  editingBlockId = null;
+}
+
+// Init planner week
+plannerWeek = getPlannerMonday(new Date());
+
+
+// ===== FIREBASE SYNC =====
+const SYNC_USER = 'pau2026_user'; // cambia esto a un ID único tuyo si quieres privacidad
+
+function initFirebaseSync() {
+  const { db, ref, onValue, configured } = window._fb;
+  if (!configured || !db) { updateSyncStatus('offline'); return; }
+  updateSyncStatus('syncing');
+
+  const dataRef = ref(db, SYNC_USER + '/data');
+  onValue(dataRef, (snapshot) => {
+    const remote = snapshot.val();
+    if (remote) {
+      // Merge remote into local (remote wins on conflict)
+      if (remote.events)       { events = remote.events; localStorage.setItem('pau_events', JSON.stringify(events)); }
+      if (remote.topicsDone)   { topicsDone = remote.topicsDone; localStorage.setItem('pau_topics', JSON.stringify(topicsDone)); }
+      if (remote.plannerBlocks){ plannerBlocks = remote.plannerBlocks; localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks)); }
+      // Re-render active tab
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab) {
+        const name = activeTab.id.replace('tab-', '');
+        if (name === 'calendario') renderCalendar();
+        if (name === 'agenda') renderAgenda();
+        if (name === 'planificador') renderPlanner();
+        if (name === 'temario') renderTemario();
+        if (name === 'estadisticas') renderStats();
+      }
+    }
+    updateSyncStatus('online');
+  }, (err) => { updateSyncStatus('error'); });
+}
+
+function pushToFirebase() {
+  const { db, ref, set, configured } = window._fb || {};
+  if (!configured || !db) return;
+  const dataRef = ref(db, SYNC_USER + '/data');
+  set(dataRef, { events, topicsDone, plannerBlocks })
+    .then(() => updateSyncStatus('online'))
+    .catch(() => updateSyncStatus('error'));
+}
+
+function updateSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = {
+    online:  { icon: '🟢', text: 'Sincronizado', color: 'var(--accent2)' },
+    syncing: { icon: '🔄', text: 'Sincronizando...', color: 'var(--warning)' },
+    offline: { icon: '⚫', text: 'Sin Firebase', color: 'var(--text2)' },
+    error:   { icon: '🔴', text: 'Error sync', color: 'var(--danger)' }
+  };
+  const s = map[status] || map.offline;
+  el.innerHTML = `<span style="color:${s.color};font-size:0.78rem">${s.icon} ${s.text}</span>`;
+}
+
+// Patch save functions to also push to Firebase
+const _origSaveEvent = saveEvent;
+window.saveEvent = function() { _origSaveEvent(); pushToFirebase(); };
+
+const _origDeleteEvent = deleteEvent;
+window.deleteEvent = function(id) { _origDeleteEvent(id); pushToFirebase(); };
+
+const _origToggleTopic = toggleTopic;
+window.toggleTopic = function(key, i, cb) { topicsDone[key + '_' + i] = cb.checked; localStorage.setItem('pau_topics', JSON.stringify(topicsDone)); pushToFirebase(); const li = document.getElementById('topic-' + key + '-' + i); li.classList.toggle('done', cb.checked); renderTemario(); };
+
+const _origSavePlannerBlock = savePlannerBlock;
+window.savePlannerBlock = function() { _origSavePlannerBlock(); pushToFirebase(); };
+
+const _origDeletePlannerBlockById = deletePlannerBlockById;
+window.deletePlannerBlockById = function(wk, id) { _origDeletePlannerBlockById(wk, id); pushToFirebase(); };
+
+const _origClearPlannerWeek = clearPlannerWeek;
+window.clearPlannerWeek = function() { _origClearPlannerWeek(); pushToFirebase(); };
+
+// ===== EXPORT / IMPORT =====
+function exportData() {
+  const data = { events, topicsDone, plannerBlocks, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pau2026_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('📦 Datos exportados correctamente');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.events !== undefined)       { events = data.events; localStorage.setItem('pau_events', JSON.stringify(events)); }
+        if (data.topicsDone !== undefined)   { topicsDone = data.topicsDone; localStorage.setItem('pau_topics', JSON.stringify(topicsDone)); }
+        if (data.plannerBlocks !== undefined){ plannerBlocks = data.plannerBlocks; localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks)); }
+        pushToFirebase();
+        showToast('✅ Datos importados correctamente');
+        renderCalendar(); renderPlanner();
+      } catch(err) { showToast('❌ Error al leer el archivo JSON'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ===== INIT =====
+renderCalendar();
+renderPlanner();
+</script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(r => console.log('SW registrado:', r.scope))
+          .catch(e => console.warn('SW error:', e));
+      });
+    }
+  </script>
+
+</body>
+</html>
