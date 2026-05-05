@@ -904,7 +904,7 @@ function deleteEvent(id) {
 }
 
 function deleteCurrentEvent() {
-  if (editingId) { deleteEvent(editingId); closeModalDirect(); }
+  if (editingId) { (window.deleteEvent || deleteEvent)(editingId); closeModalDirect(); }
 }
 
 // ===== HELPERS =====
@@ -1108,7 +1108,7 @@ function savePlannerBlock() {
 
 function deletePlannerBlock() {
   if (!editingBlockId) return;
-  deletePlannerBlockById(editingBlockId.weekKey, editingBlockId.blockId);
+  (window.deletePlannerBlockById || deletePlannerBlockById)(editingBlockId.weekKey, editingBlockId.blockId);
   closePlannerModalDirect();
 }
 
@@ -1168,11 +1168,14 @@ function initFirebaseSync() {
   const dataRef = ref(db, SYNC_USER + '/data');
   onValue(dataRef, (snapshot) => {
     const remote = snapshot.val();
-    if (remote) {
-      // Merge remote into local (remote wins on conflict)
-      if (remote.events)       { events = remote.events; localStorage.setItem('pau_events', JSON.stringify(events)); }
-      if (remote.topicsDone)   { topicsDone = remote.topicsDone; localStorage.setItem('pau_topics', JSON.stringify(topicsDone)); }
-      if (remote.plannerBlocks){ plannerBlocks = remote.plannerBlocks; localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks)); }
+    if (remote !== null && remote !== undefined) {
+      // Sync completo: se usa lo que hay en Firebase (incluso arrays vacíos tras eliminar)
+      events        = Array.isArray(remote.events)          ? remote.events        : [];
+      topicsDone    = (remote.topicsDone && typeof remote.topicsDone === 'object') ? remote.topicsDone : {};
+      plannerBlocks = (remote.plannerBlocks && typeof remote.plannerBlocks === 'object') ? remote.plannerBlocks : {};
+      localStorage.setItem('pau_events',  JSON.stringify(events));
+      localStorage.setItem('pau_topics',  JSON.stringify(topicsDone));
+      localStorage.setItem('pau_planner', JSON.stringify(plannerBlocks));
       // Re-render active tab
       const activeTab = document.querySelector('.tab-content.active');
       if (activeTab) {
@@ -1192,7 +1195,7 @@ function pushToFirebase() {
   const { db, ref, set, configured } = window._fb || {};
   if (!configured || !db) return;
   const dataRef = ref(db, SYNC_USER + '/data');
-  set(dataRef, { events, topicsDone, plannerBlocks })
+  set(dataRef, { events: events || [], topicsDone: topicsDone || {}, plannerBlocks: plannerBlocks || {} })
     .then(() => updateSyncStatus('online'))
     .catch(() => updateSyncStatus('error'));
 }
