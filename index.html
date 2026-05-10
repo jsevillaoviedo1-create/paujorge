@@ -228,6 +228,29 @@
   .filter-chip.emp.active { border-color: var(--emp); color: var(--emp); background: #06d6a011; }
   .filter-chip.len.active { border-color: var(--len); color: var(--len); background: #9d4edd11; }
   .filter-chip.act.active { border-color: var(--act); color: var(--act); background: #ffd16611; }
+
+  /* ===== TEMARIO EDIT MODE ===== */
+  .temario-toolbar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+  .edit-mode-badge { background: var(--warning); color: #1a1d27; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.5px; }
+  .subject-card.editing { border-color: var(--accent); }
+  .edit-topic-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .edit-topic-row input[type=text] { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; font-family: inherit; }
+  .edit-topic-row input[type=text]:focus { border-color: var(--accent); }
+  .edit-topic-row .del-topic { background: var(--danger); border: none; color: #fff; border-radius: 5px; width: 22px; height: 22px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .edit-topic-row .drag-handle { color: var(--text2); cursor: grab; font-size: 0.9rem; flex-shrink: 0; }
+  .add-topic-row { display: flex; gap: 6px; margin-top: 8px; }
+  .add-topic-row input[type=text] { flex: 1; background: var(--surface2); border: 1px dashed var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; font-family: inherit; }
+  .add-topic-row input[type=text]:focus { border-color: var(--accent2); border-style: solid; }
+  .add-topic-row button { background: var(--accent2); border: none; color: #1a1d27; border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .trimestre-label-edit { display: flex; align-items: center; gap: 6px; margin: 10px 0 4px; }
+  .trimestre-label-edit input[type=text] { flex:1; background: transparent; border: none; border-bottom: 1px dashed var(--border); color: inherit; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 4px; outline: none; font-family: inherit; }
+  .trimestre-label-edit input[type=text]:focus { border-bottom-color: var(--accent); }
+  .btn-add-trimestre { background: transparent; border: 1px dashed var(--border); color: var(--text2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s; }
+  .btn-add-trimestre:hover { border-color: var(--accent2); color: var(--accent2); }
+  .card-edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .subject-name-edit { background: transparent; border: none; border-bottom: 1px dashed var(--border); color: var(--text); font-size: 0.9rem; font-weight: 700; outline: none; font-family: inherit; width: 100%; }
+  .subject-name-edit:focus { border-bottom-color: var(--accent); }
+
 </style>
 
   <!-- Firebase SDK -->
@@ -348,7 +371,10 @@
   <div id="tab-temario" class="tab-content">
     <div class="cal-header">
       <h2>Temario PAU 2026</h2>
-      <span style="font-size:0.82rem;color:var(--text2)">Marca los temas que ya has estudiado ✓</span>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:0.82rem;color:var(--text2)" id="temario-hint">Marca los temas que ya has estudiado ✓</span>
+        <button class="btn secondary" id="btn-edit-temario" onclick="toggleEditTemario()">✏️ Editar temario</button>
+      </div>
     </div>
     <div class="subjects-grid" id="subjects-grid"></div>
   </div>
@@ -523,211 +549,41 @@ const SUBJECTS = {
     ]
   },
   mat: { name: 'Matemáticas CCSS', color: 'var(--mat)', emoji: '📐',
-    trimestres: [
-      { label: '1.er Trimestre', topics: [
-      'Matrices: concepto y tipos de matrices',
-      'Matrices: suma y resta de matrices',
-      'Matrices: multiplicación de matrices',
-      'Matrices: transpuesta e inversa',
-      'Determinantes: cálculo (regla de Sarrus, cofactores)',
-      'Determinantes: propiedades y rango de una matriz',
-      'Sistemas de ecuaciones: clasificación (Rouché-Fröbenius)',
-      'Sistemas de ecuaciones: método de Gauss',
-      'Sistemas de ecuaciones: regla de Cramer',
-      'Sistemas de ecuaciones: sistemas homogéneos',
-      'Programación lineal: inecuaciones lineales',
-      'Programación lineal: región factible y vértices',
-      'Programación lineal: función objetivo y optimización',
-      'Programación lineal: problemas de aplicación',
-      ]},
-      { label: '2.º Trimestre', topics: [
-      'Funciones: dominio, recorrido y tipos',
-      'Funciones: operaciones y composición',
-      'Límites: concepto e interpretación gráfica',
-      'Límites: cálculo algebraico y sustitución',
-      'Límites: indeterminaciones (0/0, ∞/∞, ∞−∞)',
-      'Límites: límites en el infinito y asíntotas',
-      'Continuidad: definición y tipos de discontinuidad',
-      'Derivadas: definición y tasa de variación',
-      'Derivadas: reglas de derivación (producto, cociente, cadena)',
-      'Derivadas: derivada de funciones compuestas',
-      'Derivadas: recta tangente y normal a una curva',
-      'Aplicaciones: crecimiento y decrecimiento',
-      'Aplicaciones: máximos y mínimos relativos y absolutos',
-      'Aplicaciones: concavidad, convexidad y puntos de inflexión',
-      'Aplicaciones: representación gráfica completa',
-      'Aplicaciones: problemas de optimización',
-      'Integrales: primitivas y reglas de integración inmediata',
-      'Integrales: integración por partes',
-      'Integrales: integración por sustitución / cambio de variable',
-      'Integrales: integral definida y teorema fundamental del cálculo',
-      'Integrales: área bajo una curva',
-      'Integrales: área entre dos curvas',
-      ]},
-      { label: '3.er Trimestre', topics: [
-      'Estadística descriptiva: tipos de variables y tablas de frecuencias',
-      'Estadística descriptiva: media, mediana y moda',
-      'Estadística descriptiva: varianza y desviación típica',
-      'Estadística descriptiva: diagramas y gráficos estadísticos',
-      'Probabilidad: espacio muestral y sucesos',
-      'Probabilidad: axiomas y propiedades',
-      'Probabilidad: probabilidad condicionada',
-      'Probabilidad: regla del producto y teorema de la probabilidad total',
-      'Probabilidad: teorema de Bayes',
-      'Distribuciones discretas: distribución binomial B(n,p)',
-      'Distribuciones discretas: media y varianza de la binomial',
-      'Distribuciones continuas: distribución Normal N(μ,σ)',
-      'Distribuciones continuas: tipificación y uso de tablas Z',
-      'Distribuciones continuas: aproximación binomial a la Normal',
-      'Inferencia estadística: intervalos de confianza para la media',
-      'Inferencia estadística: intervalos de confianza para proporciones',
-      'Inferencia estadística: tamaño muestral'
-      ]}
-    ],
     topics: [
-      'Matrices: concepto y tipos de matrices',
-      'Matrices: suma y resta de matrices',
-      'Matrices: multiplicación de matrices',
-      'Matrices: transpuesta e inversa',
-      'Determinantes: cálculo (regla de Sarrus, cofactores)',
-      'Determinantes: propiedades y rango de una matriz',
-      'Sistemas de ecuaciones: clasificación (Rouché-Fröbenius)',
-      'Sistemas de ecuaciones: método de Gauss',
-      'Sistemas de ecuaciones: regla de Cramer',
-      'Sistemas de ecuaciones: sistemas homogéneos',
-      'Programación lineal: inecuaciones lineales',
-      'Programación lineal: región factible y vértices',
-      'Programación lineal: función objetivo y optimización',
-      'Programación lineal: problemas de aplicación',
-      'Funciones: dominio, recorrido y tipos',
-      'Funciones: operaciones y composición',
-      'Límites: concepto e interpretación gráfica',
-      'Límites: cálculo algebraico y sustitución',
-      'Límites: indeterminaciones (0/0, ∞/∞, ∞−∞)',
-      'Límites: límites en el infinito y asíntotas',
-      'Continuidad: definición y tipos de discontinuidad',
-      'Derivadas: definición y tasa de variación',
-      'Derivadas: reglas de derivación (producto, cociente, cadena)',
-      'Derivadas: derivada de funciones compuestas',
-      'Derivadas: recta tangente y normal a una curva',
-      'Aplicaciones: crecimiento y decrecimiento',
-      'Aplicaciones: máximos y mínimos relativos y absolutos',
-      'Aplicaciones: concavidad, convexidad y puntos de inflexión',
-      'Aplicaciones: representación gráfica completa',
-      'Aplicaciones: problemas de optimización',
-      'Integrales: primitivas y reglas de integración inmediata',
-      'Integrales: integración por partes',
-      'Integrales: integración por sustitución / cambio de variable',
-      'Integrales: integral definida y teorema fundamental del cálculo',
-      'Integrales: área bajo una curva',
-      'Integrales: área entre dos curvas',
-      'Estadística descriptiva: tipos de variables y tablas de frecuencias',
-      'Estadística descriptiva: media, mediana y moda',
-      'Estadística descriptiva: varianza y desviación típica',
-      'Estadística descriptiva: diagramas y gráficos estadísticos',
-      'Probabilidad: espacio muestral y sucesos',
-      'Probabilidad: axiomas y propiedades',
-      'Probabilidad: probabilidad condicionada',
-      'Probabilidad: regla del producto y teorema de la probabilidad total',
-      'Probabilidad: teorema de Bayes',
-      'Distribuciones discretas: distribución binomial B(n,p)',
-      'Distribuciones discretas: media y varianza de la binomial',
-      'Distribuciones continuas: distribución Normal N(μ,σ)',
-      'Distribuciones continuas: tipificación y uso de tablas Z',
-      'Distribuciones continuas: aproximación binomial a la Normal',
-      'Inferencia estadística: intervalos de confianza para la media',
-      'Inferencia estadística: intervalos de confianza para proporciones',
-      'Inferencia estadística: tamaño muestral'
+      'Álgebra: matrices y determinantes', 'Sistemas de ecuaciones lineales (Cramer, Gauss)',
+      'Análisis: límites y continuidad', 'Derivadas: reglas y aplicaciones',
+      'Crecimiento, decrecimiento y extremos', 'Integrales: cálculo de primitivas',
+      'Integrales: área entre curvas', 'Estadística descriptiva: medidas',
+      'Distribuciones de probabilidad (Binomial, Normal)', 'Inferencia estadística básica',
+      'Programación lineal', 'Funciones: dominio, imagen y gráficas'
     ]
   },
   his: { name: 'Historia de España', color: 'var(--his)', emoji: '🏛️',
-    trimestres: [
-      { label: '1.er Trimestre', topics: [
-        'Unidad 1: Las raíces históricas de España',
-        'Unidad 2: La Edad Media cristiana',
-        'Unidad 3: La Monarquía Hispánica (ss. XVI-XVII)',
-        'Unidad 4: El siglo XVIII — Reformismo borbónico'
-      ]},
-      { label: '2.º Trimestre', topics: [
-        'Unidad 5: Crisis del Antiguo Régimen y liberalismo',
-        'Unidad 6: La construcción del Estado Liberal — Isabel II',
-        'Unidad 7: La Restauración Borbónica (1875-1902)',
-        'Unidad 8: Transformaciones económicas y sociales del s. XIX',
-        'Unidad 9: El reinado de Alfonso XIII (1902-1931)'
-      ]},
-      { label: '3.er Trimestre', topics: [
-        'Unidad 10: La Segunda República y la Guerra Civil',
-        'Unidad 11: La Dictadura Franquista (1939-1975)',
-        'Unidad 12: La Transición y la Democracia',
-        'Unidad extra: Las Constituciones españolas (repaso PAU)'
-      ]}
-    ],
     topics: [
-      'Unidad 1: Las raíces históricas de España',
-      'Unidad 2: La Edad Media cristiana',
-      'Unidad 3: La Monarquía Hispánica (ss. XVI-XVII)',
-      'Unidad 4: El siglo XVIII — Reformismo borbónico',
-      'Unidad 5: Crisis del Antiguo Régimen y liberalismo',
-      'Unidad 6: La construcción del Estado Liberal — Isabel II',
-      'Unidad 7: La Restauración Borbónica (1875-1902)',
-      'Unidad 8: Transformaciones económicas y sociales del s. XIX',
-      'Unidad 9: El reinado de Alfonso XIII (1902-1931)',
-      'Unidad 10: La Segunda República y la Guerra Civil',
-      'Unidad 11: La Dictadura Franquista (1939-1975)',
-      'Unidad 12: La Transición y la Democracia',
-      'Unidad extra: Las Constituciones españolas (repaso PAU)'
+      'La Restauración borbónica (1874-1902)', 'Crisis del 98 y regeneracionismo',
+      'El reinado de Alfonso XIII (1902-1931)', 'La Segunda República Española',
+      'La Guerra Civil Española (1936-1939)', 'La dictadura franquista: etapas',
+      'Economía y sociedad en el franquismo', 'La Transición democrática',
+      'La Constitución de 1978', 'Los gobiernos democráticos (1979-2000)',
+      'España en la Unión Europea', 'Arte y cultura contemporánea española'
     ]
   },
   emp: { name: 'Empresa y Modelos de Negocio', color: 'var(--emp)', emoji: '💼',
-    trimestres: [
-      { label: '1.er Trimestre — La Empresa', topics: [
-        'Tema 1: La empresa y el empresario',
-        'Tema 2: La empresa en su entorno (PESTEL, DAFO)',
-        'Tema 3: Localización y dimensión de la empresa',
-        'Tema 4: La organización interna de la empresa',
-        'Tema 5: Gestión de Recursos Humanos'
-      ]},
-      { label: '2.º Trimestre — Área Comercial, Producción y Contabilidad', topics: [
-        'Tema 6: El marketing y la investigación de mercados',
-        'Tema 7: El plan de marketing — Las 4P',
-        'Tema 8: La función productiva — Producción y stocks',
-        'Tema 9: Introducción a la Contabilidad y Cuentas Anuales',
-        'Tema 10: Análisis económico-financiero',
-        'Tema 11: Análisis económico-financiero avanzado'
-      ]},
-      { label: '3.er Trimestre — Finanzas y Modelos de Negocio', topics: [
-        'Tema 12: La financiación de la empresa',
-        'Tema 13: Las inversiones — VAN y TIR',
-        'Tema 14: Modelos de negocio e innovación — Canvas',
-        'Tema 15: Proyecto empresarial — Plan de empresa'
-      ]}
-    ],
     topics: [
-      'Tema 1: La empresa y el empresario',
-      'Tema 2: La empresa en su entorno (PESTEL, DAFO)',
-      'Tema 3: Localización y dimensión de la empresa',
-      'Tema 4: La organización interna de la empresa',
-      'Tema 5: Gestión de Recursos Humanos',
-      'Tema 6: El marketing y la investigación de mercados',
-      'Tema 7: El plan de marketing — Las 4P',
-      'Tema 8: La función productiva — Producción y stocks',
-      'Tema 9: Introducción a la Contabilidad y Cuentas Anuales',
-      'Tema 10: Análisis económico-financiero',
-      'Tema 11: Análisis económico-financiero avanzado',
-      'Tema 12: La financiación de la empresa',
-      'Tema 13: Las inversiones — VAN y TIR',
-      'Tema 14: Modelos de negocio e innovación — Canvas',
-      'Tema 15: Proyecto empresarial — Plan de empresa'
+      'La empresa: concepto, tipos y funciones', 'Análisis del entorno: DAFO y PESTEL',
+      'Plan de empresa y modelo Canvas', 'Organización interna: organigramas',
+      'Recursos humanos y gestión del talento', 'Marketing: producto, precio, plaza, promoción',
+      'Contabilidad básica: balance y cuenta de resultados', 'Fuentes de financiación',
+      'Inversión y análisis de proyectos (VAN, TIR)', 'Fiscalidad empresarial básica',
+      'Innovación y emprendimiento social', 'Start-ups y modelos de negocio digitales'
     ]
   },
   len: { name: 'Lengua y Literatura', color: 'var(--len)', emoji: '📝',
     topics: [
-      'Comentario de texto: pasos y estructura', 'Tipología textual y modalidades',
-      'Morfología: categorías gramaticales', 'Sintaxis: análisis de oraciones',
-      'Subordinadas sustantivas, adjetivas y adverbiales', 'Semántica: polisemia, sinonimia',
-      'Literatura S.XX: Generación del 98 (Unamuno, Machado)', 'Novecentismo y vanguardias',
-      'Generación del 27 (Lorca, Alberti, Cernuda)', 'Literatura de posguerra',
-      'Novela y poesía contemporánea', 'Texto expositivo-argumentativo: redacción'
+      'Comentario de texto', 'Narrativa',
+      'Dramático',
+      'Morfología', 'Sintaxis: análisis de oraciones',
+      'Poesía', 'teatro',
     ]
   },
   act: { name: 'Actividad Personal', color: 'var(--act)', emoji: '⚡',
@@ -738,7 +594,6 @@ const SUBJECTS = {
     ]
   }
 };
-
 
 let events = JSON.parse(localStorage.getItem('pau_events') || '[]');
 let topicsDone = JSON.parse(localStorage.getItem('pau_topics') || '{}');
@@ -932,46 +787,255 @@ function renderAgenda() {
 // ===== TEMARIO =====
 function renderTemario() {
   let html = '';
+  const isEditing = window.temarioEditMode || false;
+
   Object.entries(SUBJECTS).forEach(([key, s]) => {
-    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
-    const pct = Math.round(done / s.topics.length * 100);
-    html += `<div class="subject-card">
+    // Use overridden data if exists (from localStorage edits)
+    const sData = getSubjectData(key);
+    const done = sData.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = sData.topics.length ? Math.round(done / sData.topics.length * 100) : 0;
+
+    html += `<div class="subject-card${isEditing?' editing':''}" id="card-${key}">
       <div class="subject-card-header">
-        <div class="subject-icon" style="background:${s.color}22">${s.emoji}</div>
-        <div style="flex:1">
-          <div style="font-weight:700;font-size:0.9rem">${s.name}</div>
-          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
-          <div class="progress-label">${done}/${s.topics.length} temas · ${pct}%</div>
+        <div class="subject-icon" style="background:${sData.color}22">${sData.emoji}</div>
+        <div style="flex:1">`;
+
+    if (isEditing) {
+      html += `<input class="subject-name-edit" type="text" value="${escHtml(sData.name)}" oninput="updateSubjectName('${key}',this.value)" placeholder="Nombre asignatura">`;
+    } else {
+      html += `<div style="font-weight:700;font-size:0.9rem">${sData.name}</div>`;
+    }
+
+    html += `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${sData.color}"></div></div>
+          <div class="progress-label">${done}/${sData.topics.length} temas · ${pct}%</div>
         </div>
       </div>
-      <div class="subject-card-body">
-        <ul class="topic-list">`;
-    s.topics.forEach((t, i) => {
-      const done_t = topicsDone[key + '_' + i] || false;
-      html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-        <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-        <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
-      </li>`;
-    });
-    html += `</ul></div></div>`;
+      <div class="subject-card-body">`;
+
+    if (isEditing) {
+      // Edit mode: render by trimestres if available
+      if (sData.trimestres) {
+        sData.trimestres.forEach((tr, ti) => {
+          html += `<div class="trimestre-label-edit">
+            <input type="text" value="${escHtml(tr.label)}" oninput="updateTrimestreLabel('${key}',${ti},this.value)" placeholder="Nombre trimestre">
+            <button class="del-topic" title="Eliminar trimestre" onclick="removeTrimestre('${key}',${ti})">✕</button>
+          </div>`;
+          // global topic index for this subject
+          const startIdx = sData.trimestres.slice(0,ti).reduce((a,t)=>a+t.topics.length,0);
+          tr.topics.forEach((t, localI) => {
+            const globalI = startIdx + localI;
+            html += `<div class="edit-topic-row" id="etr-${key}-${globalI}">
+              <span class="drag-handle">⠿</span>
+              <input type="text" value="${escHtml(t)}" oninput="updateTopicText('${key}',${globalI},this.value)">
+              <button class="del-topic" onclick="removeTopic('${key}',${globalI})">✕</button>
+            </div>`;
+          });
+          html += `<div class="add-topic-row">
+            <input type="text" id="new-topic-${key}-${ti}" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')addTopic('${key}',${ti})">
+            <button onclick="addTopic('${key}',${ti})">+ Añadir</button>
+          </div>`;
+        });
+        html += `<button class="btn-add-trimestre" onclick="addTrimestre('${key}')">+ Añadir trimestre</button>`;
+      } else {
+        // No trimestres, flat list
+        sData.topics.forEach((t, i) => {
+          html += `<div class="edit-topic-row" id="etr-${key}-${i}">
+            <span class="drag-handle">⠿</span>
+            <input type="text" value="${escHtml(t)}" oninput="updateTopicText('${key}',${i},this.value)">
+            <button class="del-topic" onclick="removeTopic('${key}',${i})">✕</button>
+          </div>`;
+        });
+        html += `<div class="add-topic-row">
+          <input type="text" id="new-topic-${key}-flat" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')addTopicFlat('${key}')">
+          <button onclick="addTopicFlat('${key}')">+ Añadir</button>
+        </div>`;
+      }
+    } else {
+      // View mode
+      html += `<ul class="topic-list">`;
+      if (sData.trimestres) {
+        let globalIdx = 0;
+        sData.trimestres.forEach(tr => {
+          html += `<li style="padding:6px 0 2px;font-size:0.72rem;font-weight:800;color:${sData.color};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-top:4px">${tr.label}</li>`;
+          tr.topics.forEach(t => {
+            const i = globalIdx++;
+            const done_t = topicsDone[key + '_' + i] || false;
+            html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+              <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+              <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${escHtml(t)}</span>
+            </li>`;
+          });
+        });
+      } else {
+        sData.topics.forEach((t, i) => {
+          const done_t = topicsDone[key + '_' + i] || false;
+          html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+            <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+            <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${escHtml(t)}</span>
+          </li>`;
+        });
+      }
+      html += `</ul>`;
+    }
+
+    html += `</div></div>`;
   });
+
   document.getElementById('subjects-grid').innerHTML = html;
 }
 
-function toggleTopic(key, i, cb) {
-  topicsDone[key + '_' + i] = cb.checked;
-  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
-  const li = document.getElementById(`topic-${key}-${i}`);
-  li.classList.toggle('done', cb.checked);
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---- Edit state stored in localStorage under 'pau_subjects_override' ----
+function getSubjectData(key) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  return overrides[key] ? overrides[key] : JSON.parse(JSON.stringify(SUBJECTS[key]));
+}
+
+function saveSubjectOverride(key, data) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  overrides[key] = data;
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+}
+
+function rebuildTopicsFlat(key) {
+  // After any structural change, rebuild the flat topics array from trimestres
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  if (overrides[key].trimestres) {
+    overrides[key].topics = overrides[key].trimestres.flatMap(tr => tr.topics);
+  }
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+}
+
+function toggleEditTemario() {
+  window.temarioEditMode = !window.temarioEditMode;
+  const btn = document.getElementById('btn-edit-temario');
+  const hint = document.getElementById('temario-hint');
+  if (window.temarioEditMode) {
+    btn.textContent = '✅ Guardar cambios';
+    btn.style.background = 'var(--accent2)';
+    btn.style.color = '#1a1d27';
+    hint.innerHTML = '<span class="edit-mode-badge">MODO EDICIÓN</span> Edita, añade o elimina temas libremente';
+  } else {
+    btn.textContent = '✏️ Editar temario';
+    btn.style.background = '';
+    btn.style.color = '';
+    hint.textContent = 'Marca los temas que ya has estudiado ✓';
+    showToast('✅ Temario guardado correctamente');
+  }
   renderTemario();
 }
+
+function updateSubjectName(key, val) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  overrides[key].name = val;
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+}
+
+function updateTopicText(key, globalI, val) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  const s = overrides[key];
+  if (s.trimestres) {
+    let idx = 0;
+    for (let tr of s.trimestres) {
+      for (let li = 0; li < tr.topics.length; li++) {
+        if (idx === globalI) { tr.topics[li] = val; break; }
+        idx++;
+      }
+    }
+  } else {
+    s.topics[globalI] = val;
+  }
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  rebuildTopicsFlat(key);
+}
+
+function updateTrimestreLabel(key, ti, val) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  overrides[key].trimestres[ti].label = val;
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+}
+
+function removeTopic(key, globalI) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  const s = overrides[key];
+  if (s.trimestres) {
+    let idx = 0;
+    for (let tr of s.trimestres) {
+      for (let li = 0; li < tr.topics.length; li++) {
+        if (idx === globalI) { tr.topics.splice(li, 1); break; }
+        idx++;
+      }
+    }
+  } else {
+    s.topics.splice(globalI, 1);
+  }
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  rebuildTopicsFlat(key);
+  renderTemario();
+}
+
+function addTopic(key, ti) {
+  const inp = document.getElementById(`new-topic-${key}-${ti}`);
+  if (!inp || !inp.value.trim()) return;
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  overrides[key].trimestres[ti].topics.push(inp.value.trim());
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  rebuildTopicsFlat(key);
+  renderTemario();
+}
+
+function addTopicFlat(key) {
+  const inp = document.getElementById(`new-topic-${key}-flat`);
+  if (!inp || !inp.value.trim()) return;
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  overrides[key].topics.push(inp.value.trim());
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  renderTemario();
+}
+
+function addTrimestre(key) {
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  if (!overrides[key].trimestres) overrides[key].trimestres = [];
+  overrides[key].trimestres.push({ label: 'Nuevo bloque', topics: [] });
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  renderTemario();
+}
+
+function removeTrimestre(key, ti) {
+  if (!confirm('¿Eliminar este bloque y todos sus temas?')) return;
+  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
+  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
+  overrides[key].trimestres.splice(ti, 1);
+  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
+  rebuildTopicsFlat(key);
+  renderTemario();
+}
+
+function resetTemario() {
+  if (!confirm('¿Restablecer el temario original? Se perderán todos los cambios.')) return;
+  localStorage.removeItem('pau_subjects_override');
+  renderTemario();
+  showToast('Temario restablecido al original');
+}
+
 
 // ===== STATS =====
 function renderStats() {
   const total = events.length;
   const today = new Date(); today.setHours(0,0,0,0);
   const upcoming = events.filter(e => new Date(e.date + 'T00:00:00') >= today).length;
-  const totalTopics = Object.values(SUBJECTS).reduce((a, s) => a + s.topics.length, 0);
+  const totalTopics = Object.keys(SUBJECTS).reduce((a, key) => a + getSubjectData(key).topics.length, 0);
   const doneTops = Object.keys(topicsDone).filter(k => topicsDone[k]).length;
   document.getElementById('stats-grid').innerHTML = `
     <div class="stat-card"><div class="val" style="color:var(--accent)">${total}</div><div class="lbl">Eventos totales</div></div>
@@ -982,13 +1046,14 @@ function renderStats() {
   `;
   let subjHtml = '';
   Object.entries(SUBJECTS).forEach(([key, s]) => {
+    const sd = getSubjectData(key);
     const evCount = events.filter(e => e.subject === key).length;
-    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
-    const pct = Math.round(done / s.topics.length * 100);
+    const done = sd.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = sd.topics.length ? Math.round(done / sd.topics.length * 100) : 0;
     subjHtml += `<div class="subj-stat">
-      <div class="subj-stat-name" style="color:${s.color}">${s.emoji} ${s.name}</div>
-      <div class="bar-chart-row"><span style="min-width:90px">Temas:</span><div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${s.color}"></div></div><span>${pct}%</span></div>
-      <div style="font-size:0.75rem;color:var(--text2);margin-top:6px">${evCount} sesiones de estudio programadas · ${done}/${s.topics.length} temas</div>
+      <div class="subj-stat-name" style="color:${sd.color}">${sd.emoji} ${sd.name}</div>
+      <div class="bar-chart-row"><span style="min-width:90px">Temas:</span><div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${sd.color}"></div></div><span>${pct}%</span></div>
+      <div style="font-size:0.75rem;color:var(--text2);margin-top:6px">${evCount} sesiones de estudio programadas · ${done}/${sd.topics.length} temas</div>
     </div>`;
   });
   document.getElementById('subject-stats').innerHTML = subjHtml;
