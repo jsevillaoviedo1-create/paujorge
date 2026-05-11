@@ -228,29 +228,6 @@
   .filter-chip.emp.active { border-color: var(--emp); color: var(--emp); background: #06d6a011; }
   .filter-chip.len.active { border-color: var(--len); color: var(--len); background: #9d4edd11; }
   .filter-chip.act.active { border-color: var(--act); color: var(--act); background: #ffd16611; }
-
-  /* ===== TEMARIO EDIT MODE ===== */
-  .temario-toolbar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
-  .edit-mode-badge { background: var(--warning); color: #1a1d27; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.5px; }
-  .subject-card.editing { border-color: var(--accent); }
-  .edit-topic-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--border); }
-  .edit-topic-row input[type=text] { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; font-family: inherit; }
-  .edit-topic-row input[type=text]:focus { border-color: var(--accent); }
-  .edit-topic-row .del-topic { background: var(--danger); border: none; color: #fff; border-radius: 5px; width: 22px; height: 22px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .edit-topic-row .drag-handle { color: var(--text2); cursor: grab; font-size: 0.9rem; flex-shrink: 0; }
-  .add-topic-row { display: flex; gap: 6px; margin-top: 8px; }
-  .add-topic-row input[type=text] { flex: 1; background: var(--surface2); border: 1px dashed var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 0.82rem; outline: none; font-family: inherit; }
-  .add-topic-row input[type=text]:focus { border-color: var(--accent2); border-style: solid; }
-  .add-topic-row button { background: var(--accent2); border: none; color: #1a1d27; border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
-  .trimestre-label-edit { display: flex; align-items: center; gap: 6px; margin: 10px 0 4px; }
-  .trimestre-label-edit input[type=text] { flex:1; background: transparent; border: none; border-bottom: 1px dashed var(--border); color: inherit; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 4px; outline: none; font-family: inherit; }
-  .trimestre-label-edit input[type=text]:focus { border-bottom-color: var(--accent); }
-  .btn-add-trimestre { background: transparent; border: 1px dashed var(--border); color: var(--text2); border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s; }
-  .btn-add-trimestre:hover { border-color: var(--accent2); color: var(--accent2); }
-  .card-edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
-  .subject-name-edit { background: transparent; border: none; border-bottom: 1px dashed var(--border); color: var(--text); font-size: 0.9rem; font-weight: 700; outline: none; font-family: inherit; width: 100%; }
-  .subject-name-edit:focus { border-bottom-color: var(--accent); }
-
 </style>
 
   <!-- Firebase SDK -->
@@ -371,10 +348,7 @@
   <div id="tab-temario" class="tab-content">
     <div class="cal-header">
       <h2>Temario PAU 2026</h2>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <span style="font-size:0.82rem;color:var(--text2)" id="temario-hint">Marca los temas que ya has estudiado ✓</span>
-        <button class="btn secondary" id="btn-edit-temario" onclick="toggleEditTemario()">✏️ Editar temario</button>
-      </div>
+      <span style="font-size:0.82rem;color:var(--text2)">Marca los temas que ya has estudiado ✓</span>
     </div>
     <div class="subjects-grid" id="subjects-grid"></div>
   </div>
@@ -580,10 +554,12 @@ const SUBJECTS = {
   },
   len: { name: 'Lengua y Literatura', color: 'var(--len)', emoji: '📝',
     topics: [
-      'Comentario de texto', 'Narrativa',
-      'Dramático',
-      'Morfología', 'Sintaxis: análisis de oraciones',
-      'Poesía', 'teatro',
+      'Comentario de texto: pasos y estructura', 'Tipología textual y modalidades',
+      'Morfología: categorías gramaticales', 'Sintaxis: análisis de oraciones',
+      'Subordinadas sustantivas, adjetivas y adverbiales', 'Semántica: polisemia, sinonimia',
+      'Literatura S.XX: Generación del 98 (Unamuno, Machado)', 'Novecentismo y vanguardias',
+      'Generación del 27 (Lorca, Alberti, Cernuda)', 'Literatura de posguerra',
+      'Novela y poesía contemporánea', 'Texto expositivo-argumentativo: redacción'
     ]
   },
   act: { name: 'Actividad Personal', color: 'var(--act)', emoji: '⚡',
@@ -595,6 +571,22 @@ const SUBJECTS = {
   }
 };
 
+// Seed schedule once then load
+(function(){
+  if (!localStorage.getItem('pau_sched_seeded')) {
+    const se = [{"id": "sched_0", "title": "Matemáticas CCSS", "date": "2026-05-11", "timeStart": "09:30", "timeEnd": "11:00", "subject": "mat", "desc": "Horario PAU: MAT 09:30–11:00", "priority": "normal"}, {"id": "sched_1", "title": "Historia de España", "date": "2026-05-11", "timeStart": "12:00", "timeEnd": "13:30", "subject": "his", "desc": "Horario PAU: HIS 12:00–13:30", "priority": "normal"}, {"id": "sched_2", "title": "Empresa y Negocio", "date": "2026-05-11", "timeStart": "14:00", "timeEnd": "15:00", "subject": "emp", "desc": "Horario PAU: EMP 14:00–15:00", "priority": "normal"}, {"id": "sched_3", "title": "Lengua y Literatura", "date": "2026-05-11", "timeStart": "18:40", "timeEnd": "20:10", "subject": "len", "desc": "Horario PAU: LEN 18:40–20:10", "priority": "normal"}, {"id": "sched_4", "title": "Inglés", "date": "2026-05-11", "timeStart": "20:40", "timeEnd": "22:10", "subject": "ing", "desc": "Horario PAU: ING 20:40–22:10", "priority": "normal"}, {"id": "sched_5", "title": "Matemáticas CCSS", "date": "2026-05-11", "timeStart": "22:30", "timeEnd": "23:00", "subject": "mat", "desc": "Horario PAU: MAT 22:30–23:00", "priority": "normal"}, {"id": "sched_6", "title": "Clase", "date": "2026-05-12", "timeStart": "09:00", "timeEnd": "15:00", "subject": "act", "desc": "Horario PAU: Clase 09:00–15:00", "priority": "normal"}, {"id": "sched_7", "title": "Historia de España", "date": "2026-05-12", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_8", "title": "Matemáticas CCSS", "date": "2026-05-12", "timeStart": "20:00", "timeEnd": "21:00", "subject": "mat", "desc": "Horario PAU: MAT 20:00–21:00", "priority": "normal"}, {"id": "sched_9", "title": "Lengua y Literatura", "date": "2026-05-12", "timeStart": "21:10", "timeEnd": "22:40", "subject": "len", "desc": "Horario PAU: LEN 21:10–22:40", "priority": "normal"}, {"id": "sched_10", "title": "Matemáticas CCSS", "date": "2026-05-13", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_11", "title": "Historia de España", "date": "2026-05-13", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_12", "title": "EMP en clase", "date": "2026-05-13", "timeStart": "11:00", "timeEnd": "11:55", "subject": "emp", "desc": "Horario PAU: EMP clase 11:00–11:55", "priority": "normal"}, {"id": "sched_13", "title": "Empresa y Negocio", "date": "2026-05-13", "timeStart": "15:00", "timeEnd": "16:30", "subject": "emp", "desc": "Horario PAU: EMP 15:00–16:30", "priority": "normal"}, {"id": "sched_14", "title": "Inglés", "date": "2026-05-13", "timeStart": "18:30", "timeEnd": "19:30", "subject": "ing", "desc": "Horario PAU: ING 18:30–19:30", "priority": "normal"}, {"id": "sched_15", "title": "Historia de España", "date": "2026-05-13", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_16", "title": "Matemáticas CCSS", "date": "2026-05-13", "timeStart": "21:00", "timeEnd": "22:30", "subject": "mat", "desc": "Horario PAU: MAT 21:00–22:30", "priority": "normal"}, {"id": "sched_17", "title": "Matemáticas CCSS", "date": "2026-05-14", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_18", "title": "Clase", "date": "2026-05-14", "timeStart": "10:30", "timeEnd": "12:30", "subject": "act", "desc": "Horario PAU: Clase 10:30–12:30", "priority": "normal"}, {"id": "sched_19", "title": "Historia de España", "date": "2026-05-14", "timeStart": "13:00", "timeEnd": "14:00", "subject": "his", "desc": "Horario PAU: HIS 13:00–14:00", "priority": "normal"}, {"id": "sched_20", "title": "Empresa y Negocio", "date": "2026-05-14", "timeStart": "15:30", "timeEnd": "17:00", "subject": "emp", "desc": "Horario PAU: EMP 15:30–17:00", "priority": "normal"}, {"id": "sched_21", "title": "Inglés", "date": "2026-05-14", "timeStart": "17:30", "timeEnd": "19:00", "subject": "ing", "desc": "Horario PAU: ING 17:30–19:00", "priority": "normal"}, {"id": "sched_22", "title": "Lengua y Literatura", "date": "2026-05-14", "timeStart": "19:30", "timeEnd": "21:00", "subject": "len", "desc": "Horario PAU: LEN 19:30–21:00", "priority": "normal"}, {"id": "sched_23", "title": "Historia de España", "date": "2026-05-14", "timeStart": "21:10", "timeEnd": "22:30", "subject": "his", "desc": "Horario PAU: HIS 21:10–22:30", "priority": "normal"}, {"id": "sched_24", "title": "Inglés", "date": "2026-05-14", "timeStart": "22:30", "timeEnd": "23:00", "subject": "ing", "desc": "Horario PAU: ING 22:30–23:00", "priority": "normal"}, {"id": "sched_25", "title": "Matemáticas CCSS", "date": "2026-05-15", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_26", "title": "Historia de España", "date": "2026-05-15", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_27", "title": "Empresa y Negocio", "date": "2026-05-15", "timeStart": "13:00", "timeEnd": "14:00", "subject": "emp", "desc": "Horario PAU: EMP 13:00–14:00", "priority": "normal"}, {"id": "sched_28", "title": "Inglés", "date": "2026-05-15", "timeStart": "13:00", "timeEnd": "14:00", "subject": "ing", "desc": "Horario PAU: ING 13:00–14:00", "priority": "normal"}, {"id": "sched_29", "title": "Lengua y Literatura", "date": "2026-05-15", "timeStart": "15:00", "timeEnd": "16:00", "subject": "len", "desc": "Horario PAU: LEN 15:00–16:00", "priority": "normal"}, {"id": "sched_30", "title": "Historia de España", "date": "2026-05-15", "timeStart": "15:00", "timeEnd": "16:00", "subject": "his", "desc": "Horario PAU: HIS 15:00–16:00", "priority": "normal"}, {"id": "sched_31", "title": "Lengua y Literatura", "date": "2026-05-15", "timeStart": "19:30", "timeEnd": "21:00", "subject": "len", "desc": "Horario PAU: LEN 19:30–21:00", "priority": "normal"}, {"id": "sched_32", "title": "Matemáticas CCSS", "date": "2026-05-15", "timeStart": "21:00", "timeEnd": "22:30", "subject": "mat", "desc": "Horario PAU: MAT 21:00–22:30", "priority": "normal"}, {"id": "sched_33", "title": "Repaso / Simulacro", "date": "2026-05-16", "timeStart": "09:00", "timeEnd": "10:00", "subject": "act", "desc": "Horario PAU: ACT 09:00–10:00", "priority": "normal"}, {"id": "sched_34", "title": "EMP en clase", "date": "2026-05-16", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_35", "title": "Lengua y Literatura", "date": "2026-05-16", "timeStart": "11:00", "timeEnd": "12:00", "subject": "len", "desc": "Horario PAU: LEN 11:00–12:00", "priority": "normal"}, {"id": "sched_36", "title": "Clase", "date": "2026-05-17", "timeStart": "09:00", "timeEnd": "17:00", "subject": "act", "desc": "Horario PAU: Clase 09:00–17:00", "priority": "normal"}, {"id": "sched_37", "title": "Historia de España", "date": "2026-05-18", "timeStart": "09:30", "timeEnd": "11:00", "subject": "his", "desc": "Horario PAU: HIS 09:30–11:00", "priority": "normal"}, {"id": "sched_38", "title": "EMP en clase", "date": "2026-05-18", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_39", "title": "Matemáticas CCSS", "date": "2026-05-18", "timeStart": "11:50", "timeEnd": "13:20", "subject": "mat", "desc": "Horario PAU: MAT 11:50–13:20", "priority": "normal"}, {"id": "sched_40", "title": "Empresa y Negocio", "date": "2026-05-18", "timeStart": "15:00", "timeEnd": "16:30", "subject": "emp", "desc": "Horario PAU: EMP 15:00–16:30", "priority": "normal"}, {"id": "sched_41", "title": "Lengua y Literatura", "date": "2026-05-18", "timeStart": "18:40", "timeEnd": "20:10", "subject": "len", "desc": "Horario PAU: LEN 18:40–20:10", "priority": "normal"}, {"id": "sched_42", "title": "Historia de España", "date": "2026-05-18", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_43", "title": "Inglés", "date": "2026-05-18", "timeStart": "20:40", "timeEnd": "22:10", "subject": "ing", "desc": "Horario PAU: ING 20:40–22:10", "priority": "normal"}, {"id": "sched_44", "title": "Matemáticas CCSS", "date": "2026-05-18", "timeStart": "22:30", "timeEnd": "23:00", "subject": "mat", "desc": "Horario PAU: MAT 22:30–23:00", "priority": "normal"}, {"id": "sched_45", "title": "Clase", "date": "2026-05-19", "timeStart": "09:00", "timeEnd": "15:00", "subject": "act", "desc": "Horario PAU: Clase 09:00–15:00", "priority": "normal"}, {"id": "sched_46", "title": "Historia de España", "date": "2026-05-19", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_47", "title": "Matemáticas CCSS", "date": "2026-05-19", "timeStart": "20:00", "timeEnd": "21:30", "subject": "mat", "desc": "Horario PAU: MAT 20:00–21:30", "priority": "normal"}, {"id": "sched_48", "title": "Lengua y Literatura", "date": "2026-05-19", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_49", "title": "Matemáticas CCSS", "date": "2026-05-20", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_50", "title": "Historia de España", "date": "2026-05-20", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_51", "title": "Empresa y Negocio", "date": "2026-05-20", "timeStart": "13:20", "timeEnd": "14:50", "subject": "emp", "desc": "Horario PAU: EMP 13:20–14:50", "priority": "normal"}, {"id": "sched_52", "title": "Empresa y Negocio", "date": "2026-05-20", "timeStart": "15:00", "timeEnd": "16:30", "subject": "emp", "desc": "Horario PAU: EMP 15:00–16:30", "priority": "normal"}, {"id": "sched_53", "title": "Lengua y Literatura", "date": "2026-05-20", "timeStart": "17:00", "timeEnd": "18:30", "subject": "len", "desc": "Horario PAU: LEN 17:00–18:30", "priority": "normal"}, {"id": "sched_54", "title": "Inglés", "date": "2026-05-20", "timeStart": "18:30", "timeEnd": "19:30", "subject": "ing", "desc": "Horario PAU: ING 18:30–19:30", "priority": "normal"}, {"id": "sched_55", "title": "Historia de España", "date": "2026-05-20", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_56", "title": "Matemáticas CCSS", "date": "2026-05-20", "timeStart": "20:00", "timeEnd": "21:30", "subject": "mat", "desc": "Horario PAU: MAT 20:00–21:30", "priority": "normal"}, {"id": "sched_57", "title": "Lengua y Literatura", "date": "2026-05-20", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_58", "title": "Historia de España", "date": "2026-05-20", "timeStart": "21:30", "timeEnd": "23:00", "subject": "his", "desc": "Horario PAU: HIS 21:30–23:00", "priority": "normal"}, {"id": "sched_59", "title": "Matemáticas CCSS", "date": "2026-05-21", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_60", "title": "EMP en clase", "date": "2026-05-21", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_61", "title": "Empresa y Negocio", "date": "2026-05-21", "timeStart": "13:20", "timeEnd": "14:50", "subject": "emp", "desc": "Horario PAU: EMP 13:20–14:50", "priority": "normal"}, {"id": "sched_62", "title": "Inglés", "date": "2026-05-21", "timeStart": "17:00", "timeEnd": "18:30", "subject": "ing", "desc": "Horario PAU: ING 17:00–18:30", "priority": "normal"}, {"id": "sched_63", "title": "Lengua y Literatura", "date": "2026-05-21", "timeStart": "19:00", "timeEnd": "20:30", "subject": "len", "desc": "Horario PAU: LEN 19:00–20:30", "priority": "normal"}, {"id": "sched_64", "title": "Historia de España", "date": "2026-05-21", "timeStart": "21:10", "timeEnd": "22:30", "subject": "his", "desc": "Horario PAU: HIS 21:10–22:30", "priority": "normal"}, {"id": "sched_65", "title": "Inglés", "date": "2026-05-21", "timeStart": "19:40", "timeEnd": "20:40", "subject": "ing", "desc": "Horario PAU: ING 19:40–20:40", "priority": "normal"}, {"id": "sched_66", "title": "Matemáticas CCSS", "date": "2026-05-21", "timeStart": "20:30", "timeEnd": "22:00", "subject": "mat", "desc": "Horario PAU: MAT 20:30–22:00", "priority": "normal"}, {"id": "sched_67", "title": "Lengua y Literatura", "date": "2026-05-21", "timeStart": "22:30", "timeEnd": "23:00", "subject": "len", "desc": "Horario PAU: LEN 22:30–23:00", "priority": "normal"}, {"id": "sched_68", "title": "Matemáticas CCSS", "date": "2026-05-22", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_69", "title": "Historia de España", "date": "2026-05-22", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_70", "title": "Empresa y Negocio", "date": "2026-05-22", "timeStart": "13:00", "timeEnd": "14:00", "subject": "emp", "desc": "Horario PAU: EMP 13:00–14:00", "priority": "normal"}, {"id": "sched_71", "title": "Inglés", "date": "2026-05-22", "timeStart": "13:00", "timeEnd": "14:00", "subject": "ing", "desc": "Horario PAU: ING 13:00–14:00", "priority": "normal"}, {"id": "sched_72", "title": "Lengua y Literatura", "date": "2026-05-22", "timeStart": "15:00", "timeEnd": "16:00", "subject": "len", "desc": "Horario PAU: LEN 15:00–16:00", "priority": "normal"}, {"id": "sched_73", "title": "Historia de España", "date": "2026-05-22", "timeStart": "15:00", "timeEnd": "16:00", "subject": "his", "desc": "Horario PAU: HIS 15:00–16:00", "priority": "normal"}, {"id": "sched_74", "title": "Empresa y Negocio", "date": "2026-05-22", "timeStart": "15:30", "timeEnd": "17:00", "subject": "emp", "desc": "Horario PAU: EMP 15:30–17:00", "priority": "normal"}, {"id": "sched_75", "title": "Inglés", "date": "2026-05-22", "timeStart": "17:00", "timeEnd": "18:30", "subject": "ing", "desc": "Horario PAU: ING 17:00–18:30", "priority": "normal"}, {"id": "sched_76", "title": "Lengua y Literatura", "date": "2026-05-22", "timeStart": "19:00", "timeEnd": "20:30", "subject": "len", "desc": "Horario PAU: LEN 19:00–20:30", "priority": "normal"}, {"id": "sched_77", "title": "Historia de España", "date": "2026-05-22", "timeStart": "21:10", "timeEnd": "22:30", "subject": "his", "desc": "Horario PAU: HIS 21:10–22:30", "priority": "normal"}, {"id": "sched_78", "title": "Matemáticas CCSS", "date": "2026-05-22", "timeStart": "20:30", "timeEnd": "22:00", "subject": "mat", "desc": "Horario PAU: MAT 20:30–22:00", "priority": "normal"}, {"id": "sched_79", "title": "Repaso / Simulacro", "date": "2026-05-23", "timeStart": "09:00", "timeEnd": "10:00", "subject": "act", "desc": "Horario PAU: ACT 09:00–10:00", "priority": "normal"}, {"id": "sched_80", "title": "EMP en clase", "date": "2026-05-23", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_81", "title": "Lengua y Literatura", "date": "2026-05-23", "timeStart": "11:00", "timeEnd": "12:00", "subject": "len", "desc": "Horario PAU: LEN 11:00–12:00", "priority": "normal"}, {"id": "sched_82", "title": "Clase", "date": "2026-05-24", "timeStart": "09:00", "timeEnd": "17:00", "subject": "act", "desc": "Horario PAU: Clase 09:00–17:00", "priority": "normal"}, {"id": "sched_83", "title": "Historia de España", "date": "2026-05-25", "timeStart": "09:30", "timeEnd": "11:00", "subject": "his", "desc": "Horario PAU: HIS 09:30–11:00", "priority": "normal"}, {"id": "sched_84", "title": "EMP en clase", "date": "2026-05-25", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_85", "title": "Matemáticas CCSS", "date": "2026-05-25", "timeStart": "11:50", "timeEnd": "13:20", "subject": "mat", "desc": "Horario PAU: MAT 11:50–13:20", "priority": "normal"}, {"id": "sched_86", "title": "Empresa y Negocio", "date": "2026-05-25", "timeStart": "15:00", "timeEnd": "16:30", "subject": "emp", "desc": "Horario PAU: EMP 15:00–16:30", "priority": "normal"}, {"id": "sched_87", "title": "Lengua y Literatura", "date": "2026-05-25", "timeStart": "18:40", "timeEnd": "20:10", "subject": "len", "desc": "Horario PAU: LEN 18:40–20:10", "priority": "normal"}, {"id": "sched_88", "title": "Historia de España", "date": "2026-05-25", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_89", "title": "Inglés", "date": "2026-05-25", "timeStart": "20:40", "timeEnd": "22:10", "subject": "ing", "desc": "Horario PAU: ING 20:40–22:10", "priority": "normal"}, {"id": "sched_90", "title": "Matemáticas CCSS", "date": "2026-05-25", "timeStart": "22:30", "timeEnd": "23:00", "subject": "mat", "desc": "Horario PAU: MAT 22:30–23:00", "priority": "normal"}, {"id": "sched_91", "title": "Clase", "date": "2026-05-26", "timeStart": "09:00", "timeEnd": "15:00", "subject": "act", "desc": "Horario PAU: Clase 09:00–15:00", "priority": "normal"}, {"id": "sched_92", "title": "Historia de España", "date": "2026-05-26", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_93", "title": "Matemáticas CCSS", "date": "2026-05-26", "timeStart": "20:00", "timeEnd": "21:30", "subject": "mat", "desc": "Horario PAU: MAT 20:00–21:30", "priority": "normal"}, {"id": "sched_94", "title": "Lengua y Literatura", "date": "2026-05-26", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_95", "title": "Matemáticas CCSS", "date": "2026-05-27", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_96", "title": "Historia de España", "date": "2026-05-27", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_97", "title": "Matemáticas CCSS", "date": "2026-05-27", "timeStart": "11:50", "timeEnd": "13:20", "subject": "mat", "desc": "Horario PAU: MAT 11:50–13:20", "priority": "normal"}, {"id": "sched_98", "title": "Empresa y Negocio", "date": "2026-05-27", "timeStart": "13:20", "timeEnd": "14:50", "subject": "emp", "desc": "Horario PAU: EMP 13:20–14:50", "priority": "normal"}, {"id": "sched_99", "title": "Empresa y Negocio", "date": "2026-05-27", "timeStart": "15:00", "timeEnd": "16:30", "subject": "emp", "desc": "Horario PAU: EMP 15:00–16:30", "priority": "normal"}, {"id": "sched_100", "title": "Lengua y Literatura", "date": "2026-05-27", "timeStart": "17:00", "timeEnd": "18:30", "subject": "len", "desc": "Horario PAU: LEN 17:00–18:30", "priority": "normal"}, {"id": "sched_101", "title": "Inglés", "date": "2026-05-27", "timeStart": "18:30", "timeEnd": "19:30", "subject": "ing", "desc": "Horario PAU: ING 18:30–19:30", "priority": "normal"}, {"id": "sched_102", "title": "Historia de España", "date": "2026-05-27", "timeStart": "19:40", "timeEnd": "21:10", "subject": "his", "desc": "Horario PAU: HIS 19:40–21:10", "priority": "normal"}, {"id": "sched_103", "title": "Matemáticas CCSS", "date": "2026-05-27", "timeStart": "20:00", "timeEnd": "21:30", "subject": "mat", "desc": "Horario PAU: MAT 20:00–21:30", "priority": "normal"}, {"id": "sched_104", "title": "Lengua y Literatura", "date": "2026-05-27", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_105", "title": "Matemáticas CCSS", "date": "2026-05-28", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_106", "title": "EMP en clase", "date": "2026-05-28", "timeStart": "10:00", "timeEnd": "10:55", "subject": "emp", "desc": "Horario PAU: EMP clase 10:00–10:55", "priority": "normal"}, {"id": "sched_107", "title": "Inglés", "date": "2026-05-28", "timeStart": "13:00", "timeEnd": "14:00", "subject": "ing", "desc": "Horario PAU: ING 13:00–14:00", "priority": "normal"}, {"id": "sched_108", "title": "Historia de España", "date": "2026-05-28", "timeStart": "13:30", "timeEnd": "14:30", "subject": "his", "desc": "Horario PAU: HIS 13:30–14:30", "priority": "normal"}, {"id": "sched_109", "title": "Empresa y Negocio", "date": "2026-05-28", "timeStart": "15:30", "timeEnd": "17:00", "subject": "emp", "desc": "Horario PAU: EMP 15:30–17:00", "priority": "normal"}, {"id": "sched_110", "title": "Inglés", "date": "2026-05-28", "timeStart": "17:00", "timeEnd": "18:30", "subject": "ing", "desc": "Horario PAU: ING 17:00–18:30", "priority": "normal"}, {"id": "sched_111", "title": "Matemáticas CCSS", "date": "2026-05-28", "timeStart": "20:30", "timeEnd": "22:00", "subject": "mat", "desc": "Horario PAU: MAT 20:30–22:00", "priority": "normal"}, {"id": "sched_112", "title": "Lengua y Literatura", "date": "2026-05-28", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_113", "title": "Historia de España", "date": "2026-05-28", "timeStart": "21:10", "timeEnd": "22:30", "subject": "his", "desc": "Horario PAU: HIS 21:10–22:30", "priority": "normal"}, {"id": "sched_114", "title": "Matemáticas CCSS", "date": "2026-05-29", "timeStart": "08:30", "timeEnd": "10:00", "subject": "mat", "desc": "Horario PAU: MAT 08:30–10:00", "priority": "normal"}, {"id": "sched_115", "title": "Historia de España", "date": "2026-05-29", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_116", "title": "Empresa y Negocio", "date": "2026-05-29", "timeStart": "13:00", "timeEnd": "14:00", "subject": "emp", "desc": "Horario PAU: EMP 13:00–14:00", "priority": "normal"}, {"id": "sched_117", "title": "Inglés", "date": "2026-05-29", "timeStart": "13:00", "timeEnd": "14:00", "subject": "ing", "desc": "Horario PAU: ING 13:00–14:00", "priority": "normal"}, {"id": "sched_118", "title": "Repaso / Simulacro", "date": "2026-05-29", "timeStart": "15:30", "timeEnd": "17:00", "subject": "act", "desc": "Horario PAU: ACT 15:30–17:00", "priority": "normal"}, {"id": "sched_119", "title": "Lengua y Literatura", "date": "2026-05-29", "timeStart": "17:00", "timeEnd": "18:30", "subject": "len", "desc": "Horario PAU: LEN 17:00–18:30", "priority": "normal"}, {"id": "sched_120", "title": "Matemáticas CCSS", "date": "2026-05-29", "timeStart": "20:30", "timeEnd": "22:00", "subject": "mat", "desc": "Horario PAU: MAT 20:30–22:00", "priority": "normal"}, {"id": "sched_121", "title": "Lengua y Literatura", "date": "2026-05-29", "timeStart": "21:00", "timeEnd": "22:30", "subject": "len", "desc": "Horario PAU: LEN 21:00–22:30", "priority": "normal"}, {"id": "sched_122", "title": "Historia de España", "date": "2026-05-29", "timeStart": "21:10", "timeEnd": "22:30", "subject": "his", "desc": "Horario PAU: HIS 21:10–22:30", "priority": "normal"}, {"id": "sched_123", "title": "Repaso / Simulacro", "date": "2026-05-30", "timeStart": "09:00", "timeEnd": "10:00", "subject": "act", "desc": "Horario PAU: ACT 09:00–10:00", "priority": "normal"}, {"id": "sched_124", "title": "Matemáticas CCSS", "date": "2026-05-30", "timeStart": "11:00", "timeEnd": "12:30", "subject": "mat", "desc": "Horario PAU: MAT 11:00–12:30", "priority": "normal"}, {"id": "sched_125", "title": "Historia de España", "date": "2026-05-30", "timeStart": "11:00", "timeEnd": "12:00", "subject": "his", "desc": "Horario PAU: HIS 11:00–12:00", "priority": "normal"}, {"id": "sched_126", "title": "Lengua y Literatura", "date": "2026-05-30", "timeStart": "11:00", "timeEnd": "12:00", "subject": "len", "desc": "Horario PAU: LEN 11:00–12:00", "priority": "normal"}, {"id": "sched_127", "title": "Empresa y Negocio", "date": "2026-05-30", "timeStart": "13:00", "timeEnd": "14:00", "subject": "emp", "desc": "Horario PAU: EMP 13:00–14:00", "priority": "normal"}, {"id": "sched_128", "title": "Inglés", "date": "2026-05-30", "timeStart": "13:00", "timeEnd": "14:00", "subject": "ing", "desc": "Horario PAU: ING 13:00–14:00", "priority": "normal"}, {"id": "sched_129", "title": "Repaso / Simulacro", "date": "2026-05-31", "timeStart": "09:00", "timeEnd": "10:00", "subject": "act", "desc": "Horario PAU: ACT 09:00–10:00", "priority": "normal"}, {"id": "sched_130", "title": "Matemáticas CCSS", "date": "2026-05-31", "timeStart": "11:00", "timeEnd": "12:30", "subject": "mat", "desc": "Horario PAU: MAT 11:00–12:30", "priority": "normal"}, {"id": "sched_131", "title": "Lengua y Literatura", "date": "2026-05-31", "timeStart": "11:00", "timeEnd": "12:00", "subject": "len", "desc": "Horario PAU: LEN 11:00–12:00", "priority": "normal"}, {"id": "sched_132", "title": "Repaso / Simulacro", "date": "2026-06-01", "timeStart": "09:00", "timeEnd": "10:00", "subject": "act", "desc": "Horario PAU: ACT 09:00–10:00", "priority": "normal"}, {"id": "sched_133", "title": "Matemáticas CCSS", "date": "2026-06-01", "timeStart": "11:00", "timeEnd": "12:30", "subject": "mat", "desc": "Horario PAU: MAT 11:00–12:30", "priority": "normal"}];
+    const sp = {"2026-05-11": [{"id": "sched_0", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 9, "endH": 11, "notes": "09:30–11:00"}, {"id": "sched_1", "subject": "his", "title": "Historia de España", "dayIndex": 0, "startH": 12, "endH": 14, "notes": "12:00–13:30"}, {"id": "sched_2", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 0, "startH": 14, "endH": 15, "notes": "14:00–15:00"}, {"id": "sched_3", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 0, "startH": 18, "endH": 21, "notes": "18:40–20:10"}, {"id": "sched_4", "subject": "ing", "title": "Inglés", "dayIndex": 0, "startH": 20, "endH": 23, "notes": "20:40–22:10"}, {"id": "sched_5", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 22, "endH": 23, "notes": "22:30–23:00"}, {"id": "sched_6", "subject": "act", "title": "Clase", "dayIndex": 1, "startH": 9, "endH": 15, "notes": "09:00–15:00"}, {"id": "sched_7", "subject": "his", "title": "Historia de España", "dayIndex": 1, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_8", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 1, "startH": 20, "endH": 21, "notes": "20:00–21:00"}, {"id": "sched_9", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 1, "startH": 21, "endH": 23, "notes": "21:10–22:40"}, {"id": "sched_10", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_11", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_12", "subject": "emp", "title": "EMP en clase", "dayIndex": 2, "startH": 11, "endH": 12, "notes": "11:00–11:55"}, {"id": "sched_13", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 2, "startH": 15, "endH": 17, "notes": "15:00–16:30"}, {"id": "sched_14", "subject": "ing", "title": "Inglés", "dayIndex": 2, "startH": 18, "endH": 20, "notes": "18:30–19:30"}, {"id": "sched_15", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_16", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_17", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 3, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_18", "subject": "act", "title": "Clase", "dayIndex": 3, "startH": 10, "endH": 13, "notes": "10:30–12:30"}, {"id": "sched_19", "subject": "his", "title": "Historia de España", "dayIndex": 3, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_20", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 3, "startH": 15, "endH": 17, "notes": "15:30–17:00"}, {"id": "sched_21", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 17, "endH": 19, "notes": "17:30–19:00"}, {"id": "sched_22", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 3, "startH": 19, "endH": 21, "notes": "19:30–21:00"}, {"id": "sched_23", "subject": "his", "title": "Historia de España", "dayIndex": 3, "startH": 21, "endH": 23, "notes": "21:10–22:30"}, {"id": "sched_24", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 22, "endH": 23, "notes": "22:30–23:00"}, {"id": "sched_25", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_26", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_27", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_28", "subject": "ing", "title": "Inglés", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_29", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 15, "endH": 16, "notes": "15:00–16:00"}, {"id": "sched_30", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 15, "endH": 16, "notes": "15:00–16:00"}, {"id": "sched_31", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 19, "endH": 21, "notes": "19:30–21:00"}, {"id": "sched_32", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_33", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 5, "startH": 9, "endH": 10, "notes": "09:00–10:00"}, {"id": "sched_34", "subject": "emp", "title": "EMP en clase", "dayIndex": 5, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_35", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 5, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_36", "subject": "act", "title": "Clase", "dayIndex": 6, "startH": 9, "endH": 17, "notes": "09:00–17:00"}], "2026-05-18": [{"id": "sched_37", "subject": "his", "title": "Historia de España", "dayIndex": 0, "startH": 9, "endH": 11, "notes": "09:30–11:00"}, {"id": "sched_38", "subject": "emp", "title": "EMP en clase", "dayIndex": 0, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_39", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 11, "endH": 14, "notes": "11:50–13:20"}, {"id": "sched_40", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 0, "startH": 15, "endH": 17, "notes": "15:00–16:30"}, {"id": "sched_41", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 0, "startH": 18, "endH": 21, "notes": "18:40–20:10"}, {"id": "sched_42", "subject": "his", "title": "Historia de España", "dayIndex": 0, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_43", "subject": "ing", "title": "Inglés", "dayIndex": 0, "startH": 20, "endH": 23, "notes": "20:40–22:10"}, {"id": "sched_44", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 22, "endH": 23, "notes": "22:30–23:00"}, {"id": "sched_45", "subject": "act", "title": "Clase", "dayIndex": 1, "startH": 9, "endH": 15, "notes": "09:00–15:00"}, {"id": "sched_46", "subject": "his", "title": "Historia de España", "dayIndex": 1, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_47", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 1, "startH": 20, "endH": 22, "notes": "20:00–21:30"}, {"id": "sched_48", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 1, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_49", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_50", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_51", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 2, "startH": 13, "endH": 15, "notes": "13:20–14:50"}, {"id": "sched_52", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 2, "startH": 15, "endH": 17, "notes": "15:00–16:30"}, {"id": "sched_53", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 2, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_54", "subject": "ing", "title": "Inglés", "dayIndex": 2, "startH": 18, "endH": 20, "notes": "18:30–19:30"}, {"id": "sched_55", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_56", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 20, "endH": 22, "notes": "20:00–21:30"}, {"id": "sched_57", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 2, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_58", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 21, "endH": 23, "notes": "21:30–23:00"}, {"id": "sched_59", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 3, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_60", "subject": "emp", "title": "EMP en clase", "dayIndex": 3, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_61", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 3, "startH": 13, "endH": 15, "notes": "13:20–14:50"}, {"id": "sched_62", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_63", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 3, "startH": 19, "endH": 21, "notes": "19:00–20:30"}, {"id": "sched_64", "subject": "his", "title": "Historia de España", "dayIndex": 3, "startH": 21, "endH": 23, "notes": "21:10–22:30"}, {"id": "sched_65", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 19, "endH": 21, "notes": "19:40–20:40"}, {"id": "sched_66", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 3, "startH": 20, "endH": 22, "notes": "20:30–22:00"}, {"id": "sched_67", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 3, "startH": 22, "endH": 23, "notes": "22:30–23:00"}, {"id": "sched_68", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_69", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_70", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_71", "subject": "ing", "title": "Inglés", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_72", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 15, "endH": 16, "notes": "15:00–16:00"}, {"id": "sched_73", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 15, "endH": 16, "notes": "15:00–16:00"}, {"id": "sched_74", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 4, "startH": 15, "endH": 17, "notes": "15:30–17:00"}, {"id": "sched_75", "subject": "ing", "title": "Inglés", "dayIndex": 4, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_76", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 19, "endH": 21, "notes": "19:00–20:30"}, {"id": "sched_77", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 21, "endH": 23, "notes": "21:10–22:30"}, {"id": "sched_78", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 20, "endH": 22, "notes": "20:30–22:00"}, {"id": "sched_79", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 5, "startH": 9, "endH": 10, "notes": "09:00–10:00"}, {"id": "sched_80", "subject": "emp", "title": "EMP en clase", "dayIndex": 5, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_81", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 5, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_82", "subject": "act", "title": "Clase", "dayIndex": 6, "startH": 9, "endH": 17, "notes": "09:00–17:00"}], "2026-05-25": [{"id": "sched_83", "subject": "his", "title": "Historia de España", "dayIndex": 0, "startH": 9, "endH": 11, "notes": "09:30–11:00"}, {"id": "sched_84", "subject": "emp", "title": "EMP en clase", "dayIndex": 0, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_85", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 11, "endH": 14, "notes": "11:50–13:20"}, {"id": "sched_86", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 0, "startH": 15, "endH": 17, "notes": "15:00–16:30"}, {"id": "sched_87", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 0, "startH": 18, "endH": 21, "notes": "18:40–20:10"}, {"id": "sched_88", "subject": "his", "title": "Historia de España", "dayIndex": 0, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_89", "subject": "ing", "title": "Inglés", "dayIndex": 0, "startH": 20, "endH": 23, "notes": "20:40–22:10"}, {"id": "sched_90", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 22, "endH": 23, "notes": "22:30–23:00"}, {"id": "sched_91", "subject": "act", "title": "Clase", "dayIndex": 1, "startH": 9, "endH": 15, "notes": "09:00–15:00"}, {"id": "sched_92", "subject": "his", "title": "Historia de España", "dayIndex": 1, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_93", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 1, "startH": 20, "endH": 22, "notes": "20:00–21:30"}, {"id": "sched_94", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 1, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_95", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_96", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_97", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 11, "endH": 14, "notes": "11:50–13:20"}, {"id": "sched_98", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 2, "startH": 13, "endH": 15, "notes": "13:20–14:50"}, {"id": "sched_99", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 2, "startH": 15, "endH": 17, "notes": "15:00–16:30"}, {"id": "sched_100", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 2, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_101", "subject": "ing", "title": "Inglés", "dayIndex": 2, "startH": 18, "endH": 20, "notes": "18:30–19:30"}, {"id": "sched_102", "subject": "his", "title": "Historia de España", "dayIndex": 2, "startH": 19, "endH": 22, "notes": "19:40–21:10"}, {"id": "sched_103", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 2, "startH": 20, "endH": 22, "notes": "20:00–21:30"}, {"id": "sched_104", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 2, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_105", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 3, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_106", "subject": "emp", "title": "EMP en clase", "dayIndex": 3, "startH": 10, "endH": 11, "notes": "10:00–10:55"}, {"id": "sched_107", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_108", "subject": "his", "title": "Historia de España", "dayIndex": 3, "startH": 13, "endH": 15, "notes": "13:30–14:30"}, {"id": "sched_109", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 3, "startH": 15, "endH": 17, "notes": "15:30–17:00"}, {"id": "sched_110", "subject": "ing", "title": "Inglés", "dayIndex": 3, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_111", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 3, "startH": 20, "endH": 22, "notes": "20:30–22:00"}, {"id": "sched_112", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 3, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_113", "subject": "his", "title": "Historia de España", "dayIndex": 3, "startH": 21, "endH": 23, "notes": "21:10–22:30"}, {"id": "sched_114", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 8, "endH": 10, "notes": "08:30–10:00"}, {"id": "sched_115", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_116", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_117", "subject": "ing", "title": "Inglés", "dayIndex": 4, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_118", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 4, "startH": 15, "endH": 17, "notes": "15:30–17:00"}, {"id": "sched_119", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 17, "endH": 19, "notes": "17:00–18:30"}, {"id": "sched_120", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 4, "startH": 20, "endH": 22, "notes": "20:30–22:00"}, {"id": "sched_121", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 4, "startH": 21, "endH": 23, "notes": "21:00–22:30"}, {"id": "sched_122", "subject": "his", "title": "Historia de España", "dayIndex": 4, "startH": 21, "endH": 23, "notes": "21:10–22:30"}, {"id": "sched_123", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 5, "startH": 9, "endH": 10, "notes": "09:00–10:00"}, {"id": "sched_124", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 5, "startH": 11, "endH": 13, "notes": "11:00–12:30"}, {"id": "sched_125", "subject": "his", "title": "Historia de España", "dayIndex": 5, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_126", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 5, "startH": 11, "endH": 12, "notes": "11:00–12:00"}, {"id": "sched_127", "subject": "emp", "title": "Empresa y Negocio", "dayIndex": 5, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_128", "subject": "ing", "title": "Inglés", "dayIndex": 5, "startH": 13, "endH": 14, "notes": "13:00–14:00"}, {"id": "sched_129", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 6, "startH": 9, "endH": 10, "notes": "09:00–10:00"}, {"id": "sched_130", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 6, "startH": 11, "endH": 13, "notes": "11:00–12:30"}, {"id": "sched_131", "subject": "len", "title": "Lengua y Literatura", "dayIndex": 6, "startH": 11, "endH": 12, "notes": "11:00–12:00"}], "2026-06-01": [{"id": "sched_132", "subject": "act", "title": "Repaso / Simulacro", "dayIndex": 0, "startH": 9, "endH": 10, "notes": "09:00–10:00"}, {"id": "sched_133", "subject": "mat", "title": "Matemáticas CCSS", "dayIndex": 0, "startH": 11, "endH": 13, "notes": "11:00–12:30"}]};
+    let ev = JSON.parse(localStorage.getItem('pau_events')||'[]').filter(e=>!e.id.startsWith('sched_'));
+    localStorage.setItem('pau_events', JSON.stringify(ev.concat(se)));
+    let pl = JSON.parse(localStorage.getItem('pau_planner')||'{}');
+    Object.keys(sp).forEach(wk=>{
+      if(!pl[wk])pl[wk]=[];
+      pl[wk]=pl[wk].filter(b=>!b.id.startsWith('sched_')).concat(sp[wk]);
+    });
+    localStorage.setItem('pau_planner', JSON.stringify(pl));
+    localStorage.setItem('pau_sched_seeded','1');
+  }
+})();
 let events = JSON.parse(localStorage.getItem('pau_events') || '[]');
 let topicsDone = JSON.parse(localStorage.getItem('pau_topics') || '{}');
 let currentMonth = new Date();
@@ -787,255 +779,46 @@ function renderAgenda() {
 // ===== TEMARIO =====
 function renderTemario() {
   let html = '';
-  const isEditing = window.temarioEditMode || false;
-
   Object.entries(SUBJECTS).forEach(([key, s]) => {
-    // Use overridden data if exists (from localStorage edits)
-    const sData = getSubjectData(key);
-    const done = sData.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
-    const pct = sData.topics.length ? Math.round(done / sData.topics.length * 100) : 0;
-
-    html += `<div class="subject-card${isEditing?' editing':''}" id="card-${key}">
+    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = Math.round(done / s.topics.length * 100);
+    html += `<div class="subject-card">
       <div class="subject-card-header">
-        <div class="subject-icon" style="background:${sData.color}22">${sData.emoji}</div>
-        <div style="flex:1">`;
-
-    if (isEditing) {
-      html += `<input class="subject-name-edit" type="text" value="${escHtml(sData.name)}" oninput="updateSubjectName('${key}',this.value)" placeholder="Nombre asignatura">`;
-    } else {
-      html += `<div style="font-weight:700;font-size:0.9rem">${sData.name}</div>`;
-    }
-
-    html += `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${sData.color}"></div></div>
-          <div class="progress-label">${done}/${sData.topics.length} temas · ${pct}%</div>
+        <div class="subject-icon" style="background:${s.color}22">${s.emoji}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:0.9rem">${s.name}</div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+          <div class="progress-label">${done}/${s.topics.length} temas · ${pct}%</div>
         </div>
       </div>
-      <div class="subject-card-body">`;
-
-    if (isEditing) {
-      // Edit mode: render by trimestres if available
-      if (sData.trimestres) {
-        sData.trimestres.forEach((tr, ti) => {
-          html += `<div class="trimestre-label-edit">
-            <input type="text" value="${escHtml(tr.label)}" oninput="updateTrimestreLabel('${key}',${ti},this.value)" placeholder="Nombre trimestre">
-            <button class="del-topic" title="Eliminar trimestre" onclick="removeTrimestre('${key}',${ti})">✕</button>
-          </div>`;
-          // global topic index for this subject
-          const startIdx = sData.trimestres.slice(0,ti).reduce((a,t)=>a+t.topics.length,0);
-          tr.topics.forEach((t, localI) => {
-            const globalI = startIdx + localI;
-            html += `<div class="edit-topic-row" id="etr-${key}-${globalI}">
-              <span class="drag-handle">⠿</span>
-              <input type="text" value="${escHtml(t)}" oninput="updateTopicText('${key}',${globalI},this.value)">
-              <button class="del-topic" onclick="removeTopic('${key}',${globalI})">✕</button>
-            </div>`;
-          });
-          html += `<div class="add-topic-row">
-            <input type="text" id="new-topic-${key}-${ti}" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')addTopic('${key}',${ti})">
-            <button onclick="addTopic('${key}',${ti})">+ Añadir</button>
-          </div>`;
-        });
-        html += `<button class="btn-add-trimestre" onclick="addTrimestre('${key}')">+ Añadir trimestre</button>`;
-      } else {
-        // No trimestres, flat list
-        sData.topics.forEach((t, i) => {
-          html += `<div class="edit-topic-row" id="etr-${key}-${i}">
-            <span class="drag-handle">⠿</span>
-            <input type="text" value="${escHtml(t)}" oninput="updateTopicText('${key}',${i},this.value)">
-            <button class="del-topic" onclick="removeTopic('${key}',${i})">✕</button>
-          </div>`;
-        });
-        html += `<div class="add-topic-row">
-          <input type="text" id="new-topic-${key}-flat" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')addTopicFlat('${key}')">
-          <button onclick="addTopicFlat('${key}')">+ Añadir</button>
-        </div>`;
-      }
-    } else {
-      // View mode
-      html += `<ul class="topic-list">`;
-      if (sData.trimestres) {
-        let globalIdx = 0;
-        sData.trimestres.forEach(tr => {
-          html += `<li style="padding:6px 0 2px;font-size:0.72rem;font-weight:800;color:${sData.color};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-top:4px">${tr.label}</li>`;
-          tr.topics.forEach(t => {
-            const i = globalIdx++;
-            const done_t = topicsDone[key + '_' + i] || false;
-            html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-              <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-              <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${escHtml(t)}</span>
-            </li>`;
-          });
-        });
-      } else {
-        sData.topics.forEach((t, i) => {
-          const done_t = topicsDone[key + '_' + i] || false;
-          html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
-            <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
-            <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${escHtml(t)}</span>
-          </li>`;
-        });
-      }
-      html += `</ul>`;
-    }
-
-    html += `</div></div>`;
+      <div class="subject-card-body">
+        <ul class="topic-list">`;
+    s.topics.forEach((t, i) => {
+      const done_t = topicsDone[key + '_' + i] || false;
+      html += `<li class="topic-item${done_t?' done':''}" id="topic-${key}-${i}">
+        <input type="checkbox" ${done_t?'checked':''} onchange="toggleTopic('${key}',${i},this)">
+        <span onclick="document.getElementById('topic-${key}-${i}').querySelector('input').click()">${t}</span>
+      </li>`;
+    });
+    html += `</ul></div></div>`;
   });
-
   document.getElementById('subjects-grid').innerHTML = html;
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ---- Edit state stored in localStorage under 'pau_subjects_override' ----
-function getSubjectData(key) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  return overrides[key] ? overrides[key] : JSON.parse(JSON.stringify(SUBJECTS[key]));
-}
-
-function saveSubjectOverride(key, data) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  overrides[key] = data;
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-}
-
-function rebuildTopicsFlat(key) {
-  // After any structural change, rebuild the flat topics array from trimestres
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  if (overrides[key].trimestres) {
-    overrides[key].topics = overrides[key].trimestres.flatMap(tr => tr.topics);
-  }
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-}
-
-function toggleEditTemario() {
-  window.temarioEditMode = !window.temarioEditMode;
-  const btn = document.getElementById('btn-edit-temario');
-  const hint = document.getElementById('temario-hint');
-  if (window.temarioEditMode) {
-    btn.textContent = '✅ Guardar cambios';
-    btn.style.background = 'var(--accent2)';
-    btn.style.color = '#1a1d27';
-    hint.innerHTML = '<span class="edit-mode-badge">MODO EDICIÓN</span> Edita, añade o elimina temas libremente';
-  } else {
-    btn.textContent = '✏️ Editar temario';
-    btn.style.background = '';
-    btn.style.color = '';
-    hint.textContent = 'Marca los temas que ya has estudiado ✓';
-    showToast('✅ Temario guardado correctamente');
-  }
+function toggleTopic(key, i, cb) {
+  topicsDone[key + '_' + i] = cb.checked;
+  localStorage.setItem('pau_topics', JSON.stringify(topicsDone));
+  const li = document.getElementById(`topic-${key}-${i}`);
+  li.classList.toggle('done', cb.checked);
   renderTemario();
 }
-
-function updateSubjectName(key, val) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  overrides[key].name = val;
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-}
-
-function updateTopicText(key, globalI, val) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  const s = overrides[key];
-  if (s.trimestres) {
-    let idx = 0;
-    for (let tr of s.trimestres) {
-      for (let li = 0; li < tr.topics.length; li++) {
-        if (idx === globalI) { tr.topics[li] = val; break; }
-        idx++;
-      }
-    }
-  } else {
-    s.topics[globalI] = val;
-  }
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  rebuildTopicsFlat(key);
-}
-
-function updateTrimestreLabel(key, ti, val) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  overrides[key].trimestres[ti].label = val;
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-}
-
-function removeTopic(key, globalI) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  const s = overrides[key];
-  if (s.trimestres) {
-    let idx = 0;
-    for (let tr of s.trimestres) {
-      for (let li = 0; li < tr.topics.length; li++) {
-        if (idx === globalI) { tr.topics.splice(li, 1); break; }
-        idx++;
-      }
-    }
-  } else {
-    s.topics.splice(globalI, 1);
-  }
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  rebuildTopicsFlat(key);
-  renderTemario();
-}
-
-function addTopic(key, ti) {
-  const inp = document.getElementById(`new-topic-${key}-${ti}`);
-  if (!inp || !inp.value.trim()) return;
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  overrides[key].trimestres[ti].topics.push(inp.value.trim());
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  rebuildTopicsFlat(key);
-  renderTemario();
-}
-
-function addTopicFlat(key) {
-  const inp = document.getElementById(`new-topic-${key}-flat`);
-  if (!inp || !inp.value.trim()) return;
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  overrides[key].topics.push(inp.value.trim());
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  renderTemario();
-}
-
-function addTrimestre(key) {
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  if (!overrides[key].trimestres) overrides[key].trimestres = [];
-  overrides[key].trimestres.push({ label: 'Nuevo bloque', topics: [] });
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  renderTemario();
-}
-
-function removeTrimestre(key, ti) {
-  if (!confirm('¿Eliminar este bloque y todos sus temas?')) return;
-  const overrides = JSON.parse(localStorage.getItem('pau_subjects_override') || '{}');
-  if (!overrides[key]) overrides[key] = JSON.parse(JSON.stringify(SUBJECTS[key]));
-  overrides[key].trimestres.splice(ti, 1);
-  localStorage.setItem('pau_subjects_override', JSON.stringify(overrides));
-  rebuildTopicsFlat(key);
-  renderTemario();
-}
-
-function resetTemario() {
-  if (!confirm('¿Restablecer el temario original? Se perderán todos los cambios.')) return;
-  localStorage.removeItem('pau_subjects_override');
-  renderTemario();
-  showToast('Temario restablecido al original');
-}
-
 
 // ===== STATS =====
 function renderStats() {
   const total = events.length;
   const today = new Date(); today.setHours(0,0,0,0);
   const upcoming = events.filter(e => new Date(e.date + 'T00:00:00') >= today).length;
-  const totalTopics = Object.keys(SUBJECTS).reduce((a, key) => a + getSubjectData(key).topics.length, 0);
+  const totalTopics = Object.values(SUBJECTS).reduce((a, s) => a + s.topics.length, 0);
   const doneTops = Object.keys(topicsDone).filter(k => topicsDone[k]).length;
   document.getElementById('stats-grid').innerHTML = `
     <div class="stat-card"><div class="val" style="color:var(--accent)">${total}</div><div class="lbl">Eventos totales</div></div>
@@ -1046,14 +829,13 @@ function renderStats() {
   `;
   let subjHtml = '';
   Object.entries(SUBJECTS).forEach(([key, s]) => {
-    const sd = getSubjectData(key);
     const evCount = events.filter(e => e.subject === key).length;
-    const done = sd.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
-    const pct = sd.topics.length ? Math.round(done / sd.topics.length * 100) : 0;
+    const done = s.topics.filter((t, i) => topicsDone[key + '_' + i]).length;
+    const pct = Math.round(done / s.topics.length * 100);
     subjHtml += `<div class="subj-stat">
-      <div class="subj-stat-name" style="color:${sd.color}">${sd.emoji} ${sd.name}</div>
-      <div class="bar-chart-row"><span style="min-width:90px">Temas:</span><div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${sd.color}"></div></div><span>${pct}%</span></div>
-      <div style="font-size:0.75rem;color:var(--text2);margin-top:6px">${evCount} sesiones de estudio programadas · ${done}/${sd.topics.length} temas</div>
+      <div class="subj-stat-name" style="color:${s.color}">${s.emoji} ${s.name}</div>
+      <div class="bar-chart-row"><span style="min-width:90px">Temas:</span><div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${s.color}"></div></div><span>${pct}%</span></div>
+      <div style="font-size:0.75rem;color:var(--text2);margin-top:6px">${evCount} sesiones de estudio programadas · ${done}/${s.topics.length} temas</div>
     </div>`;
   });
   document.getElementById('subject-stats').innerHTML = subjHtml;
